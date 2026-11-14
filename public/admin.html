@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin – Ruang Kita</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--bg:#EAEFF6;--panel:#fff;--ink:#0E1B33;--mute:#5B6B86;--line:#CFD8E6;--acc:#2447F5;--free:#0E9F6E;--busy:#E0414B;--det:#E8A200;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0A1222;--panel:#121D33;--ink:#E8EEF9;--mute:#93A3BF;--line:#273655;--acc:#6C8BFF;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.5 Figtree,system-ui,sans-serif}
+h1,h2,h3,.brand{font-family:Outfit,sans-serif;margin:0}button,input{font:inherit}button{cursor:pointer}:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.hide{display:none!important}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px clamp(16px,4vw,40px);background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{font-weight:800;font-size:20px}.brand small{font:500 13px Figtree;color:var(--mute);margin-left:8px}
+.btn{border:0;border-radius:10px;padding:9px 15px;font-weight:600;background:var(--acc);color:#fff}.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn.red{background:var(--busy)}.btn.sm{padding:5px 11px;font-size:13px}
+input{padding:11px 13px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.gate{max-width:380px;margin:12vh auto;padding:26px;background:var(--panel);border:1px solid var(--line);border-radius:18px;display:grid;gap:14px}
+main{max-width:1150px;margin:auto;padding:22px clamp(16px,4vw,40px) 60px}
+.tabs{display:flex;gap:8px;margin-bottom:18px}.tabs button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:99px;padding:8px 18px}.tabs .on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px}.stat b{font:800 30px Outfit;display:block;line-height:1.15}.stat span{color:var(--mute);font-size:13px}
+.tbl{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}th,td{text-align:left;padding:11px 16px;border-bottom:1px solid var(--line);font-size:14px}th{color:var(--mute);font-weight:600;font-size:13px}tr:last-child td{border:0}
+.pill{padding:3px 11px;border-radius:99px;font-size:12.5px;font-weight:600;color:#fff;white-space:nowrap}.pill.available{background:var(--free)}.pill.occupied{background:var(--busy)}.pill.detected{background:var(--det)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--line);margin-right:6px}.dot.on{background:var(--free)}
+small.m{color:var(--mute)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:18px}
+.ch{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.ch p{margin:2px 0 0;color:var(--mute);font-size:13.5px}
+.seg button{border:1px solid var(--line);background:none;color:var(--ink);padding:5px 13px;border-radius:99px;margin-left:6px}.seg .on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bars{display:grid;grid-template-columns:repeat(24,1fr);gap:4px;height:190px;margin-top:16px}
+.bar{display:flex;flex-direction:column;height:100%}.bar .t{flex:1;display:flex;align-items:flex-end}
+.bar i{display:block;width:100%;height:var(--h);min-height:3px;background:var(--acc);opacity:.5;border-radius:5px 5px 0 0}.bar.pk i{opacity:1;background:var(--busy)}
+.bar span{font-size:10.5px;text-align:center;color:var(--mute);height:16px;line-height:16px}
+@media(max-width:640px){.bar:not(:nth-child(3n+1)) span{visibility:hidden}}
+.add{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;align-items:center}.add input{flex:1;min-width:140px}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-top:18px}
+.qc{background:#fff;color:#0E1B33;border:2px solid #0E1B33;border-radius:6px 18px 6px 6px;padding:14px;text-align:center;display:grid;justify-items:center;gap:6px;break-inside:avoid}
+.qc b{font:800 22px Outfit}.qc small{color:#5B6B86}.qc .x{justify-self:end}
+.toast{position:fixed;top:16px;right:16px;background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;z-index:9}.toast.err{background:var(--busy);color:#fff}
+@media print{body{background:#fff}header,.tabs,.add,#pantau,#riwayat,.noprint,.gate,.x{display:none!important}main{padding:0}.sheet{margin:0;grid-template-columns:repeat(3,1fr)}}
+</style></head><body>
+<header><div class="brand">Ruang Kita<small>Admin</small></div><button class="btn ghost hide" id="out" onclick="logout()">Logout</button></header>
+
+<div class="gate" id="gate"><h2>Masuk admin</h2><input id="key" type="password" placeholder="Kunci admin" onkeydown="event.key==='Enter'&&login()"><button class="btn" onclick="login()">Masuk</button></div>
+
+<main class="hide" id="main">
+ <div class="tabs noprint"><button class="on" data-t="pantau">Pantau</button><button data-t="riwayat">Riwayat</button><button data-t="kelola">Kelola meja dan QR</button></div>
+ <section id="pantau"><div class="stats" id="stats"></div>
+  <div class="card"><div class="ch"><div><h3>Jam tersibuk</h3><p id="peak"></p></div>
+   <div class="seg"><button data-r="7" class="on">7 hari</button><button data-r="30">30 hari</button><button data-r="0">Semua</button></div></div>
+   <div class="bars" id="bars" role="img" aria-label="Grafik jumlah sesi per jam"></div></div><div class="tbl"><table><thead><tr><th>Meja</th><th>Zona</th><th>Status</th><th>Pengguna</th><th>Sensor</th><th></th></tr></thead><tbody id="bMon"></tbody></table></div></section>
+ <section id="riwayat" class="hide"><div class="tbl"><table><thead><tr><th>Mulai</th><th>Meja</th><th>Pengguna</th><th>Durasi</th></tr></thead><tbody id="bHist"></tbody></table></div></section>
+ <section id="kelola" class="hide">
+  <div class="add noprint"><input id="aCode" placeholder="Kode (WS-D01)"><input id="aName" placeholder="Nama meja"><input id="aZone" placeholder="Zona" list="zl"><datalist id="zl"></datalist>
+   <button class="btn" onclick="addWs()">Tambah meja</button><button class="btn ghost" onclick="print()">Cetak semua QR</button></div>
+  <div class="sheet" id="sheet"></div></section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);let tk=sessionStorage.getItem('ak'),D,tm;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(p,o={}){const r=await fetch('/api/admin'+p,{...o,headers:{'Content-Type':'application/json',Authorization:'Bearer '+tk},body:o.body&&JSON.stringify(o.body)});
+ const d=await r.json().catch(()=>({}));if(!r.ok){if(r.status===401&&p!=='/login')logout();throw new Error(d.error||'Terjadi kesalahan')}return d}
+function toast(m,e){const t=document.createElement('div');t.className='toast'+(e?' err':'');t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),3200)}
+const run=f=>async(...a)=>{try{await f(...a)}catch(e){toast(e.message,1)}};
+const login=run(async()=>{const d=await fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:$('#key').value})}).then(async r=>{const j=await r.json();if(!r.ok)throw new Error(j.error);return j});
+ tk=d.token;sessionStorage.setItem('ak',tk);boot()});
+function logout(){tk=null;sessionStorage.removeItem('ak');clearInterval(tm);$('#gate').classList.remove('hide');$('#main').classList.add('hide');$('#out').classList.add('hide')}
+async function boot(){if(!tk)return;try{await load()}catch{return}
+ $('#gate').classList.add('hide');$('#main').classList.remove('hide');$('#out').classList.remove('hide');renderManage();clearInterval(tm);tm=setInterval(()=>load().catch(()=>{}),10000)}
+async function load(){D=await api('/data');renderMon();renderChart();renderHist()}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+ ['pantau','riwayat','kelola'].forEach(t=>$('#'+t).classList.toggle('hide',t!==b.dataset.t))});
+const who=u=>u?esc(u.name)+'<br><small class="m">'+(u.role==='student'?'NIM '+esc(u.nim):'Tamu +'+esc(u.phone))+'</small>':'<small class="m">-</small>';
+const mins=(a,b)=>Math.max(0,Math.round((new Date(b||Date.now())-new Date(a))/6e4));
+const fmtD=m=>m>=60?Math.floor(m/60)+' j '+m%60+' m':m+' m';
+const fmtT=t=>new Date(t).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+function renderMon(){const W=D.workspaces,H=D.history,today=new Date().toDateString();
+ const used=W.filter(w=>w.session).length,td=H.filter(h=>new Date(h.started_at).toDateString()===today),done=H.filter(h=>h.ended_at);
+ const avg=done.length?Math.round(done.reduce((a,h)=>a+mins(h.started_at,h.ended_at),0)/done.length):0;
+ $('#stats').innerHTML=[[used+' / '+W.length,'Meja dipakai'],[td.length,'Sesi hari ini'],[fmtD(avg),'Rata-rata durasi'],[W.filter(w=>!w.online).length,'Sensor offline']].map(([v,l])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('');
+ $('#bMon').innerHTML=W.map(w=>{const st=w.session?'occupied':(w.online&&w.present)?'detected':'available';
+  return `<tr><td><b>${esc(w.name)}</b><br><small class="m">${esc(w.code)}</small></td><td>${esc(w.zone)}</td>
+  <td><span class="pill ${st}">${{available:'Tersedia',occupied:'Dipakai',detected:'Ada orang'}[st]}</span></td>
+  <td>${who(w.session?.users)}${w.session?'<br><small class="m">'+fmtD(mins(w.session.started_at))+'</small>':''}</td>
+  <td><span class="dot ${w.online?'on':''}"></span>${w.online?(w.distance!=null?Math.round(w.distance)+' cm':'online'):'offline'}</td>
+  <td>${w.session?`<button class="btn red sm" onclick="force('${esc(w.code)}')">Paksa check-out</button>`:''}</td></tr>`}).join('')}
+let rng=7;
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{rng=+b.dataset.r;document.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x===b));renderChart()});
+function renderChart(){const lim=rng?Date.now()-rng*864e5:0,c=Array(24).fill(0);
+ D.history.filter(h=>new Date(h.started_at)>=lim).forEach(h=>{const e=new Date(h.ended_at||Date.now()),seen=new Set();
+  for(let i=0,t=new Date(h.started_at).setMinutes(0,0,0);i<24&&t<=e;i++,t+=36e5){const hr=new Date(t).getHours();if(!seen.has(hr)){seen.add(hr);c[hr]++}}});
+ const mx=Math.max(...c),pad=h=>String(h).padStart(2,'0');
+ const pk=c.map((v,h)=>v===mx?h:-1).filter(h=>h>=0);
+ $('#peak').textContent=mx?`Paling ramai pukul ${pk.map(h=>pad(h)+'.00').join(', ')} (${mx} sesi aktif). Dihitung dari ${rng?rng+' hari terakhir':'semua riwayat'}.`:'Belum ada data sesi pada rentang ini.';
+ $('#bars').innerHTML=c.map((v,h)=>`<div class="bar ${mx&&v===mx?'pk':''}" title="${pad(h)}.00 – ${v} sesi"><div class="t"><i style="--h:${mx?v/mx*100:0}%"></i></div><span>${pad(h)}</span></div>`).join('')}
+function renderHist(){$('#bHist').innerHTML=D.history.length?D.history.slice(0,100).map(h=>`<tr><td>${fmtT(h.started_at)}</td><td>${esc(h.workspaces?.name)} <small class="m">${esc(h.workspaces?.code)}</small></td><td>${who(h.users)}</td><td>${h.ended_at?fmtD(mins(h.started_at,h.ended_at)):'<span class="pill occupied">Berlangsung</span>'}</td></tr>`).join(''):'<tr><td colspan=4>Belum ada riwayat sesi.</td></tr>'}
+function renderManage(){$('#zl').innerHTML=[...new Set(D.workspaces.map(w=>w.zone))].map(z=>`<option value="${esc(z)}">`).join('');
+ $('#sheet').innerHTML=D.workspaces.map((w,i)=>`<div class="qc"><button class="btn red sm x" onclick="delWs('${esc(w.code)}')">Hapus</button><div id="q${i}"></div><b>${esc(w.name)}</b><small>${esc(w.zone)} · ${esc(w.code)}</small><small>Scan untuk check-in</small></div>`).join('');
+ D.workspaces.forEach((w,i)=>new QRCode($('#q'+i),{text:w.code,width:140,height:140}))}
+const force=run(async c=>{if(!confirm('Akhiri sesi di '+c+'?'))return;await api('/checkout',{method:'POST',body:{code:c}});toast('Sesi diakhiri');await load()});
+const addWs=run(async()=>{await api('/workspaces',{method:'POST',body:{code:$('#aCode').value,name:$('#aName').value,zone:$('#aZone').value}});
+ ['#aCode','#aName'].forEach(i=>$(i).value='');toast('Meja ditambahkan');await load();renderManage()});
+const delWs=run(async c=>{if(!confirm('Hapus meja '+c+'?'))return;await api('/workspaces/'+encodeURIComponent(c),{method:'DELETE'});toast('Meja dihapus');await load();renderManage()});
+boot();
+</script></body></html>

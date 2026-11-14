@@ -1,0 +1,15 @@
+{"version":1,"author":"workspace-kampus","editor":"wokwi","parts":[
+{"type":"wokwi-esp32-devkit-v1","id":"esp","top":0,"left":0,"attrs":{}},
+{"type":"wokwi-hc-sr04","id":"ultra","top":-120,"left":-10,"attrs":{"distance":"200"}},
+{"type":"wokwi-led","id":"ledG","top":-30,"left":190,"attrs":{"color":"limegreen"}},
+{"type":"wokwi-led","id":"ledR","top":-30,"left":240,"attrs":{"color":"red"}},
+{"type":"wokwi-resistor","id":"r1","top":60,"left":180,"attrs":{"value":"220"}},
+{"type":"wokwi-resistor","id":"r2","top":90,"left":230,"attrs":{"value":"220"}},
+{"type":"wokwi-lcd1602","id":"lcd","top":-170,"left":170,"attrs":{"pins":"i2c"}}],
+"connections":[
+["esp:VIN","ultra:VCC","red",[]],["esp:GND.1","ultra:GND","black",[]],
+["esp:D5","ultra:TRIG","green",[]],["esp:D18","ultra:ECHO","blue",[]],
+["esp:D26","r1:1","green",[]],["r1:2","ledG:A","green",[]],["ledG:C","esp:GND.1","black",[]],
+["esp:D27","r2:1","red",[]],["r2:2","ledR:A","red",[]],["ledR:C","esp:GND.1","black",[]],
+["esp:3V3","lcd:VCC","red",[]],["esp:GND.1","lcd:GND","black",[]],
+["esp:D21","lcd:SDA","purple",[]],["esp:D22","lcd:SCL","orange",[]]],"dependencies":{}}
