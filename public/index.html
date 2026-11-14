@@ -67,7 +67,7 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
   <div class="mini" aria-hidden="true"><div class="f"></div><div class="b"></div><div class="f"></div><div class="d"></div><div class="b"></div><div class="f"></div><div class="b"></div><div class="f"></div><div class="f"></div><div class="d"></div><div class="f"></div><div class="b"></div></div></div>
  <div class="box"><h2>Masuk</h2>
   <div class="tabs"><button id="tN" class="on" onclick="tab('N')">Mahasiswa</button><button id="tO" onclick="tab('O')">Tamu (WhatsApp)</button></div>
-  <div id="pN" style="display:grid;gap:14px"><label>NIM<input id="nim" inputmode="numeric" placeholder="Masukkan NIM sesuai KTM"></label>
+  <div id="pN" style="display:grid;gap:14px"><label>NIM<input id="nim" placeholder="Masukkan NIM kamu"></label>
    <button class="btn" onclick="loginNim()">Masuk dengan NIM</button><button class="link" onclick="showReg()">Belum terdaftar? Daftar di sini</button></div>
   <div id="pO" class="hide" style="gap:14px"><label>Nama<input id="gName" placeholder="Nama lengkap"></label>
    <label>Nomor WhatsApp<input id="gPhone" inputmode="tel" placeholder="08123456789"></label>
@@ -77,7 +77,7 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
    <p class="hint" id="devHint"></p></div>
   <div id="pR" class="hide stack"><b>Daftar mahasiswa</b>
    <label>Nama lengkap<input id="rName" placeholder="Sesuai KTM"></label>
-   <label>NIM<input id="rNim" inputmode="numeric" placeholder="Masukkan NIM sesuai KTM"></label>
+   <label>NIM<input id="rNim" placeholder="Masukkan NIM kamu"></label>
    <label>Program studi<input id="rMajor" placeholder="Ketik program studi kamu"></label>
    <label>Nomor WhatsApp<input id="rPhone" inputmode="tel" placeholder="08123456789"></label>
    <button class="btn" onclick="regOtp()">Kirim kode OTP</button>

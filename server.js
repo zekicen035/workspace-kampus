@@ -99,7 +99,7 @@ async function sendWa(phone,message){ // notifikasi best-effort, tidak menggagal
 }
 app.post('/api/register/verify',wrap(async(q,s)=>{
   const nim=String(q.body.nim||'').trim(),name=String(q.body.name||'').trim(),major=String(q.body.major||'').trim().slice(0,80),phone=phoneNorm(q.body.phone),code=String(q.body.code||'');
-  if(!/^[A-Za-z0-9.-]{5,20}$/.test(nim)||name.length<3||major.length<2)return s.status(400).json({error:'Isi nama, NIM, dan program studi dengan benar'});
+  if(!/^[A-Za-z0-9./-]{5,25}$/.test(nim)||name.length<3||major.length<2)return s.status(400).json({error:'Isi nama, NIM, dan program studi dengan benar'});
   if(!/^62\d{8,13}$/.test(phone))return s.status(400).json({error:'Nomor WhatsApp tidak valid'});
   const{data:st}=await db.from('students').select('nim').eq('nim',nim).maybeSingle();
   if(st)return s.status(409).json({error:'NIM ini sudah terdaftar, silakan langsung login.'});
