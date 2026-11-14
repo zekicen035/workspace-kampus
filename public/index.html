@@ -28,7 +28,7 @@ header{display:flex;justify-content:space-between;align-items:center;padding:14p
 .tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:12px;padding:4px}.tabs button{border:0;background:none;padding:10px;border-radius:9px;color:var(--mute);font-weight:600}.tabs .on{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px #0002}
 label{font-size:13px;color:var(--mute);display:grid;gap:6px}
 input{padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
-.hint{font-size:13px;color:var(--mute);margin:0}
+.hint{font-size:13px;color:var(--mute);margin:0}.stack{display:grid;gap:14px}.link{background:none;border:0;color:var(--acc);padding:0;font-weight:600;text-align:left;text-decoration:underline}
 /* dashboard */
 main{max-width:1200px;margin:auto;padding:24px clamp(16px,4vw,40px) 120px}
 .banner{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center;background:var(--ink);color:var(--bg);border-radius:16px;padding:18px 22px;margin-bottom:20px}
@@ -68,13 +68,23 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
  <div class="box"><h2>Masuk</h2>
   <div class="tabs"><button id="tN" class="on" onclick="tab('N')">Mahasiswa</button><button id="tO" onclick="tab('O')">Tamu (WhatsApp)</button></div>
   <div id="pN" style="display:grid;gap:14px"><label>NIM<input id="nim" inputmode="numeric" placeholder="contoh: 2021001"></label>
-   <button class="btn" onclick="loginNim()">Masuk dengan NIM</button></div>
+   <button class="btn" onclick="loginNim()">Masuk dengan NIM</button><button class="link" onclick="showReg()">Belum terdaftar? Daftar di sini</button></div>
   <div id="pO" class="hide" style="gap:14px"><label>Nama<input id="gName" placeholder="Nama lengkap"></label>
    <label>Nomor WhatsApp<input id="gPhone" inputmode="tel" placeholder="08123456789"></label>
    <button class="btn" onclick="reqOtp()">Kirim kode OTP</button>
    <div id="otpBox" style="display:none;gap:14px"><label>Kode OTP<input id="gOtp" inputmode="numeric" maxlength="6" placeholder="6 digit"></label>
     <button class="btn" onclick="verOtp()">Verifikasi dan masuk</button></div>
-   <p class="hint" id="devHint"></p></div></div>
+   <p class="hint" id="devHint"></p></div>
+  <div id="pR" class="hide stack"><b>Daftar mahasiswa</b>
+   <label>Nama lengkap<input id="rName" placeholder="Sesuai KTM"></label>
+   <label>NIM<input id="rNim" inputmode="numeric" placeholder="contoh: 2021004"></label>
+   <label>Program studi<input id="rMajor" list="prodiL" placeholder="contoh: Informatika"></label>
+   <datalist id="prodiL"><option value="Informatika"><option value="Sistem Informasi"><option value="Teknik Elektro"><option value="Teknik Sipil"><option value="Teknik Mesin"><option value="Manajemen"><option value="Akuntansi"></datalist>
+   <label>Nomor WhatsApp<input id="rPhone" inputmode="tel" placeholder="08123456789"></label>
+   <button class="btn" onclick="regOtp()">Kirim kode OTP</button>
+   <div id="rBox" class="hide stack"><label>Kode OTP<input id="rOtp" inputmode="numeric" maxlength="6" placeholder="6 digit"></label><button class="btn" onclick="regSubmit()">Kirim pendaftaran</button></div>
+   <p class="hint" id="rHint">Pendaftaran diperiksa admin dulu sebelum akunmu aktif.</p>
+   <button class="link" onclick="tab('N')">Kembali ke login</button></div></div>
 </section>
 
 <main class="hide" id="app">
@@ -95,19 +105,23 @@ const $=s=>document.querySelector(s);
 let token=localStorage.getItem('tk'),me=null,ws=[],zone='Semua',sc,timer;
 const LBL={available:'Tersedia',occupied:'Dipakai',detected:'Ada orang'};
 async function api(p,o={}){const r=await fetch('/api'+p,{...o,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:o.body&&JSON.stringify(o.body)});
- const d=await r.json().catch(()=>({}));if(!r.ok){if(r.status===401&&token)logout();throw new Error(d.error||'Terjadi kesalahan')}return d}
+ const d=await r.json().catch(()=>({}));if(!r.ok){if(r.status===401&&token)logout();throw Object.assign(new Error(d.error||'Terjadi kesalahan'),{data:d})}return d}
 function toast(m,err){const t=document.createElement('div');t.className='toast'+(err?' err':'');t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),3500)}
 const run=f=>async(...a)=>{try{await f(...a)}catch(e){toast(e.message,1)}};
-function tab(k){['N','O'].forEach(x=>{$('#t'+x).classList.toggle('on',x===k);$('#p'+x).classList.toggle('hide',x!==k)});$('#pO').style.display=k==='O'?'grid':'none'}
+function tab(k){$('#pR').classList.add('hide');['N','O'].forEach(x=>{$('#t'+x).classList.toggle('on',x===k);$('#p'+x).classList.toggle('hide',x!==k)});$('#pO').style.display=k==='O'?'grid':'none'}
 function start(d){token=d.token;localStorage.setItem('tk',token);boot()}
-const loginNim=run(async()=>start(await api('/auth/nim',{method:'POST',body:{nim:$('#nim').value}})));
+function showReg(){['N','O'].forEach(x=>{$('#t'+x).classList.remove('on');$('#p'+x).classList.add('hide')});$('#pR').classList.remove('hide')}
+const loginNim=run(async()=>{try{start(await api('/auth/nim',{method:'POST',body:{nim:$('#nim').value}}))}catch(e){if(e.data?.canRegister){$('#rNim').value=$('#nim').value;showReg()}throw e}});
+const regOtp=run(async()=>{const d=await api('/auth/otp/request',{method:'POST',body:{phone:$('#rPhone').value}});$('#rBox').classList.remove('hide');toast('OTP dikirim ke WhatsApp');if(d.devCode)$('#rHint').textContent='Mode demo – kode OTP: '+d.devCode});
+const regSubmit=run(async()=>{const d=await api('/register/verify',{method:'POST',body:{nim:$('#rNim').value,name:$('#rName').value,major:$('#rMajor').value,phone:$('#rPhone').value,code:$('#rOtp').value}});
+ toast(d.message);$('#nim').value=$('#rNim').value;$('#rBox').classList.add('hide');$('#rOtp').value='';tab('N')});
 const reqOtp=run(async()=>{const d=await api('/auth/otp/request',{method:'POST',body:{phone:$('#gPhone').value}});
  $('#otpBox').style.display='grid';toast('OTP dikirim ke WhatsApp');if(d.devCode)$('#devHint').textContent='Mode demo (tanpa Fonnte) – kode OTP: '+d.devCode});
 const verOtp=run(async()=>start(await api('/auth/otp/verify',{method:'POST',body:{phone:$('#gPhone').value,code:$('#gOtp').value,name:$('#gName').value}})));
 function logout(){token=null;localStorage.removeItem('tk');clearInterval(timer);me=null;$('#login').classList.remove('hide');$('#app').classList.add('hide');$('#who').classList.add('hide')}
 async function boot(){if(!token)return;try{me=await api('/me')}catch{return}
  $('#login').classList.add('hide');$('#app').classList.remove('hide');$('#who').classList.remove('hide');
- $('#uName').textContent=me.user.name;$('#uRole').textContent=me.user.role==='student'?'Mahasiswa · '+me.user.nim:'Tamu · +'+me.user.phone;
+ $('#uName').textContent=me.user.name;$('#uRole').textContent=me.user.role==='student'?'Mahasiswa · '+(me.user.major?me.user.major+' · ':'')+me.user.nim:'Tamu · +'+me.user.phone;
  refresh();loadBusy();clearInterval(timer);timer=setInterval(()=>{tick();if(++n%5===0)refresh();if(n%300===0)loadBusy()},1000)}
 let n=0;
 async function loadBusy(){try{renderBusy(await api('/stats/busy?days=7'))}catch{}}

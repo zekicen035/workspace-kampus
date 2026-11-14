@@ -16,7 +16,9 @@ const auth=async(q,s,n)=>{try{const{id}=jwt.verify((q.headers.authorization||'')
 app.post('/api/auth/nim',wrap(async(q,s)=>{
   const nim=String(q.body.nim||'').trim();
   const{data:st}=await db.from('students').select('*').eq('nim',nim).maybeSingle();
-  if(!st)return s.status(404).json({error:'NIM tidak terdaftar'});
+  if(!st){const{data:rg}=await db.from('registrations').select('status').eq('nim',nim).maybeSingle();
+    const msg=rg?.status==='pending'?'Pendaftaran kamu masih menunggu persetujuan admin.':rg?.status==='rejected'?'Pendaftaran ditolak. Hubungi admin atau daftar ulang.':'NIM belum terdaftar. Silakan daftar dulu.';
+    return s.status(404).json({error:msg,canRegister:!rg||rg.status==='rejected'})}
   let{data:u}=await db.from('users').select('*').eq('nim',nim).maybeSingle();
   if(!u)({data:u}=await db.from('users').insert({nim,name:st.name,role:'student'}).select().single());
   s.json({token:sign(u),user:u});
@@ -48,7 +50,9 @@ app.post('/api/auth/otp/verify',wrap(async(q,s)=>{
 }));
 app.get('/api/me',auth,wrap(async(q,s)=>{
   const{data:ss}=await db.from('sessions').select('started_at,workspaces(code,name,zone)').eq('user_id',q.user.id).is('ended_at',null).maybeSingle();
-  s.json({user:q.user,session:ss});
+  let major=null;
+  if(q.user.nim){const{data:st}=await db.from('students').select('major').eq('nim',q.user.nim).maybeSingle();major=st?.major||null}
+  s.json({user:{...q.user,major},session:ss});
 }));
 
 // ---------- WORKSPACE ----------
@@ -82,6 +86,30 @@ app.post('/api/iot/telemetry',wrap(async(q,s)=>{
   const{data:ss}=await db.from('sessions').select('id').eq('workspace_id',w.id).is('ended_at',null).maybeSingle();
   s.json({state:ss?'occupied':present?'detected':'available'});
 }));
+// ---------- PENDAFTARAN MANDIRI ----------
+async function checkOtp(phone,code){
+  const{data:o}=await db.from('otp_codes').select('*').eq('phone',phone).eq('used',false).gt('expires_at',new Date().toISOString()).order('created_at',{ascending:false}).limit(1).maybeSingle();
+  if(!o||o.code_hash!==hash(code))return false;
+  await db.from('otp_codes').update({used:true}).eq('id',o.id);return true;
+}
+async function sendWa(phone,message){ // notifikasi best-effort, tidak menggagalkan proses
+  if(!process.env.FONNTE_TOKEN)return;
+  try{await fetch('https://api.fonnte.com/send',{method:'POST',headers:{Authorization:process.env.FONNTE_TOKEN},body:new URLSearchParams({target:phone,message})})}
+  catch(e){console.error('[WA]',e.message)}
+}
+app.post('/api/register/verify',wrap(async(q,s)=>{
+  const nim=String(q.body.nim||'').trim(),name=String(q.body.name||'').trim(),major=String(q.body.major||'').trim().slice(0,80),phone=phoneNorm(q.body.phone),code=String(q.body.code||'');
+  if(!/^[A-Za-z0-9.-]{5,20}$/.test(nim)||name.length<3||major.length<2)return s.status(400).json({error:'Isi nama, NIM, dan program studi dengan benar'});
+  if(!/^62\d{8,13}$/.test(phone))return s.status(400).json({error:'Nomor WhatsApp tidak valid'});
+  const{data:st}=await db.from('students').select('nim').eq('nim',nim).maybeSingle();
+  if(st)return s.status(409).json({error:'NIM ini sudah terdaftar, silakan langsung login.'});
+  const{data:rg}=await db.from('registrations').select('status').eq('nim',nim).maybeSingle();
+  if(rg?.status==='pending')return s.status(409).json({error:'Pendaftaran NIM ini sudah menunggu persetujuan admin.'});
+  if(!await checkOtp(phone,code))return s.status(400).json({error:'OTP salah atau sudah kedaluwarsa'});
+  await db.from('registrations').upsert({nim,name,major,phone,status:'pending',created_at:new Date().toISOString(),decided_at:null},{onConflict:'nim'});
+  s.json({ok:true,message:'Pendaftaran terkirim. Tunggu persetujuan admin, lalu login dengan NIM.'});
+}));
+
 // ---------- STATISTIK PUBLIK (agregat, tanpa data pribadi) ----------
 const TZ=Number(process.env.TZ_OFFSET_HOURS||7); // WIB = UTC+7
 const hourOf=t=>new Date(t+TZ*36e5).getUTCHours();
@@ -93,6 +121,7 @@ app.get('/api/stats/busy',wrap(async(q,s)=>{
     for(let i=0,t=Math.floor(new Date(r.started_at).getTime()/36e5)*36e5;i<24&&t<=end;i++,t+=36e5){const h=hourOf(t);if(!seen.has(h)){seen.add(h);hours[h]++}}});
   s.json({days,hours,nowHour:hourOf(Date.now())});
 }));
+
 // ---------- ADMIN ----------
 const adminAuth=(q,s,n)=>{try{if(!jwt.verify((q.headers.authorization||'').slice(7),SECRET).admin)throw 0;n()}
   catch{s.status(401).json({error:'Akses admin diperlukan'})}};
@@ -126,6 +155,20 @@ app.delete('/api/admin/workspaces/:code',adminAuth,wrap(async(q,s)=>{
   if(w){const{data:h}=await db.from('sessions').select('id').eq('workspace_id',w.id).limit(1);
     if(h?.length)return s.status(409).json({error:'Meja ini punya riwayat sesi, tidak bisa dihapus'});
     await db.from('workspaces').delete().eq('id',w.id)}
+  s.json({ok:true});
+}));
+
+app.get('/api/admin/registrations',adminAuth,wrap(async(q,s)=>{
+  const{data}=await db.from('registrations').select('*').order('created_at',{ascending:false}).limit(200);
+  s.json((data||[]).sort((a,b)=>(b.status==='pending')-(a.status==='pending')));
+}));
+app.post('/api/admin/registrations/:nim/:act',adminAuth,wrap(async(q,s)=>{
+  const{nim,act}=q.params;if(!['approve','reject'].includes(act))return s.status(400).json({error:'Aksi tidak valid'});
+  const{data:r}=await db.from('registrations').select('*').eq('nim',nim).maybeSingle();
+  if(!r)return s.status(404).json({error:'Pendaftaran tidak ditemukan'});
+  if(act==='approve')await db.from('students').upsert({nim:r.nim,name:r.name,major:r.major},{onConflict:'nim'});
+  await db.from('registrations').update({status:act==='approve'?'approved':'rejected',decided_at:new Date().toISOString()}).eq('nim',nim);
+  sendWa(r.phone,act==='approve'?`Pendaftaran NIM ${r.nim} di Ruang Kita disetujui. Silakan login dengan NIM kamu.`:`Pendaftaran NIM ${r.nim} di Ruang Kita ditolak. Hubungi admin untuk info lebih lanjut.`);
   s.json({ok:true});
 }));
 
