@@ -61,7 +61,9 @@ app.get('/api/workspaces',wrap(async(q,s)=>{
   const{data:ss}=await db.from('sessions').select('workspace_id,started_at').is('ended_at',null);
   const m=Object.fromEntries((ss||[]).map(x=>[x.workspace_id,x]));
   s.json(ws.map(w=>{const online=w.last_seen&&Date.now()-new Date(w.last_seen)<30000;
-    return{code:w.code,name:w.name,zone:w.zone,online:!!online,distance:w.distance_cm,since:m[w.id]?.started_at||null,
+    return{code:w.code,name:w.name,zone:w.zone,
+      map_x:w.map_x,map_y:w.map_y,map_w:w.map_w,map_h:w.map_h,
+      online:!!online,distance:w.distance_cm,since:m[w.id]?.started_at||null,
       state:m[w.id]?'occupied':(online&&w.sensor_present)?'detected':'available'}}));
 }));
 app.post('/api/checkin',auth,wrap(async(q,s)=>{

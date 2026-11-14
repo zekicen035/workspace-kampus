@@ -37,7 +37,7 @@ main{max-width:1200px;margin:auto;padding:24px clamp(16px,4vw,40px) 120px}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;border-left:6px solid}.stat b{font:800 32px Outfit;display:block;line-height:1.1}
 .stat.f{border-left-color:var(--free)}.stat.b{border-left-color:var(--busy)}.stat.d{border-left-color:var(--det)}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.chips button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:99px;padding:7px 15px}.chips .on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.plan{display:grid;gap:18px}
 .room{background:var(--panel);border:2px solid var(--ink);border-radius:6px 22px 6px 6px;padding:16px}
 .room h2{font-size:18px;margin-bottom:2px}.room>small{color:var(--mute)}
 .desks{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:14px}
@@ -46,6 +46,15 @@ main{max-width:1200px;margin:auto;padding:24px clamp(16px,4vw,40px) 120px}
 .desk.available{border-color:var(--free)}.desk.occupied{border-color:var(--busy);background:color-mix(in srgb,var(--busy) 12%,var(--bg))}.desk.detected{border-color:var(--det);background:color-mix(in srgb,var(--det) 14%,var(--bg))}
 .desk.available small{color:var(--free)}.desk.occupied small{color:var(--busy)}.desk.detected small{color:var(--det)}
 .desk .dot{position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--line)}.desk .dot.on{background:var(--free);box-shadow:0 0 0 3px color-mix(in srgb,var(--free) 25%,transparent)}
+/* peta zona */
+.mapwrap{overflow-x:auto;margin-top:14px;padding-bottom:4px}
+.zmap{position:relative;min-width:560px;aspect-ratio:3.15/1;border:2px dashed var(--line);border-radius:10px;background:var(--bg)}
+.md{all:unset;cursor:pointer;position:absolute;box-sizing:border-box;display:grid;place-items:center;border:2px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font:700 11px Outfit,sans-serif}
+.md.available{border-color:var(--free);background:color-mix(in srgb,var(--free) 20%,var(--panel))}
+.md.occupied{border-color:var(--busy);background:color-mix(in srgb,var(--busy) 22%,var(--panel))}
+.md.detected{border-color:var(--det);background:color-mix(in srgb,var(--det) 24%,var(--panel))}
+.md.off{border-style:dashed}
+.md:focus-visible{outline:3px solid var(--acc)}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:22px}.card h2{font-size:18px}.card p{margin:2px 0 0;color:var(--mute);font-size:13.5px}
 .bars{display:grid;grid-template-columns:repeat(17,1fr);gap:4px;height:170px;margin-top:16px}.bar{display:flex;flex-direction:column;height:100%}.bar .t{flex:1;display:flex;align-items:flex-end}
 .bar i{display:block;width:100%;height:var(--h);min-height:3px;background:var(--acc);opacity:.5;border-radius:5px 5px 0 0}.bar.pk i{opacity:1;background:var(--busy)}.bar.now i{outline:2px solid var(--ink);outline-offset:1px}
@@ -56,7 +65,7 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
 #reader{border-radius:12px;overflow:hidden;margin:12px 0}#qr{display:grid;place-items:center;padding:14px;background:#fff;border-radius:12px;margin:12px 0}
 .toast{position:fixed;top:76px;right:16px;background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;z-index:20;max-width:320px}.toast.err{background:var(--busy);color:#fff}
 @media(max-width:820px){.login{grid-template-columns:1fr}.who span{display:none}}
-@media(prefers-reduced-motion:no-preference){.desk{transition:transform .15s}.desk:hover{transform:translateY(-2px)}}
+@media(prefers-reduced-motion:no-preference){.desk{transition:transform .15s}.desk:hover{transform:translateY(-2px)}.md{transition:transform .15s}.md:hover{transform:scale(1.06)}}
 </style></head><body>
 <header><div class="brand"><i></i>Ruang Kita</div>
 <div class="who hide" id="who"><div><b id="uName"></b><span id="uRole"></span></div><button class="btn ghost" onclick="logout()">Logout</button></div></header>
@@ -95,7 +104,7 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
 </main>
 
 <dialog id="scan"><h3>Scan QR di meja</h3><div id="reader"></div>
- <label>Atau ketik kode meja<input id="manual" placeholder="WS-A01"></label>
+ <label>Atau ketik kode meja<input id="manual" placeholder="WS-U01"></label>
  <div style="display:flex;gap:10px;margin-top:12px"><button class="btn" onclick="doCheckin($('#manual').value)">Check-in</button><button class="btn ghost" onclick="closeScan()">Batal</button></div></dialog>
 <dialog id="qrd"><h3 id="qrT"></h3><p class="hint">Cetak QR ini dan tempel di meja. Untuk demo, scan langsung dari layar.</p><div id="qr"></div><button class="btn ghost" onclick="$('#qrd').close()">Tutup</button></dialog>
 
@@ -134,11 +143,14 @@ function tick(){const s=me?.session;if(!s)return;const x=Math.max(0,Date.now()-n
 function render(){
  const c=k=>ws.filter(w=>w.state===k).length;$('#sF').textContent=c('available');$('#sB').textContent=c('occupied');$('#sD').textContent=c('detected');
  const s=me.session;$('#banner').classList.toggle('hide',!s);if(s){$('#bWs').textContent='Kamu sedang di '+s.workspaces.name;$('#bZone').textContent=s.workspaces.zone;tick()}
- const zs=['Semua',...new Set(ws.map(w=>w.zone))];
+ const ORD=['Utara','Selatan'],rk=z=>ORD.includes(z)?ORD.indexOf(z):9;
+ const zs=['Semua',...[...new Set(ws.map(w=>w.zone))].sort((a,b)=>rk(a)-rk(b))];
  $('#chips').innerHTML=zs.map(z=>`<button class="${z===zone?'on':''}" onclick="zone='${z}';render()">${z}</button>`).join('');
- $('#plan').innerHTML=zs.slice(1).filter(z=>zone==='Semua'||z===zone).map(z=>{const l=ws.filter(w=>w.zone===z);
-  return `<div class="room"><h2>${z}</h2><small>${l.filter(w=>w.state==='available').length} dari ${l.length} meja kosong</small><div class="desks">${l.map(w=>
-  `<button class="desk ${w.state}" onclick="showQr('${w.code}','${w.name}')"><span class="dot ${w.online?'on':''}" title="${w.online?'Sensor online':'Sensor offline'}"></span><b>${w.name}</b><small>${LBL[w.state]}</small></button>`).join('')}</div></div>`}).join('')}
+ $('#plan').innerHTML=zs.slice(1).filter(z=>zone==='Semua'||z===zone).map(z=>{
+  const l=ws.filter(w=>w.zone===z),pm=l.filter(w=>w.map_x!=null),po=l.filter(w=>w.map_x==null);
+  const map=pm.length?`<div class="mapwrap"><div class="zmap">${pm.map(w=>`<button class="md ${w.state} ${w.online?'':'off'}" style="left:${w.map_x}%;top:${w.map_y}%;width:${w.map_w}%;height:${w.map_h}%" title="${w.name} · ${LBL[w.state]}${w.online?'':' · sensor offline'}" onclick="showQr('${w.code}','${w.name}')">${w.code.slice(3)}</button>`).join('')}</div></div><p class="hint" style="margin-top:8px">Hijau: tersedia · Kuning: ada orang · Merah: dipakai. Ketuk meja untuk melihat QR.</p>`:'';
+  const list=po.length?`<div class="desks">${po.map(w=>`<button class="desk ${w.state}" onclick="showQr('${w.code}','${w.name}')"><span class="dot ${w.online?'on':''}"></span><b>${w.name}</b><small>${LBL[w.state]}</small></button>`).join('')}</div>`:'';
+  return `<div class="room"><h2>Zona ${z}</h2><small>${l.filter(w=>w.state==='available').length} dari ${l.length} meja kosong</small>${map}${list}</div>`}).join('')}
 function showQr(code,name){$('#qrT').textContent='QR '+name+' ('+code+')';$('#qr').innerHTML='';new QRCode($('#qr'),{text:code,width:200,height:200});$('#qrd').showModal()}
 async function openScan(){$('#scan').showModal();sc=new Html5Qrcode('reader');
  try{await sc.start({facingMode:'environment'},{fps:10,qrbox:220},t=>doCheckin(t))}catch{$('#reader').innerHTML='';toast('Kamera tidak tersedia, gunakan kode manual',1)}}
