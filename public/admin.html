@@ -24,6 +24,10 @@ table{width:100%;border-collapse:collapse;min-width:640px}th,td{text-align:left;
 .pill{padding:3px 11px;border-radius:99px;font-size:12.5px;font-weight:600;color:#fff;white-space:nowrap}.pill.available{background:var(--free)}.pill.occupied{background:var(--busy)}.pill.detected{background:var(--det)}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--line);margin-right:6px}.dot.on{background:var(--free)}
 small.m{color:var(--mute)}
+.alert{display:block;background:var(--det);color:#1b1300;border-radius:14px;padding:14px 18px;margin-bottom:18px;font-weight:600}
+tr.warn td{background:color-mix(in srgb,var(--det) 16%,transparent)}
+@keyframes pl{50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--det) 30%,transparent)}}
+@media(prefers-reduced-motion:no-preference){.alert{animation:pl 1.6s infinite}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:18px}
 .ch{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.ch p{margin:2px 0 0;color:var(--mute);font-size:13.5px}
 .seg button{border:1px solid var(--line);background:none;color:var(--ink);padding:5px 13px;border-radius:99px;margin-left:6px}.seg .on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -45,7 +49,8 @@ small.m{color:var(--mute)}
 
 <main class="hide" id="main">
  <div class="tabs noprint"><button class="on" data-t="pantau">Pantau</button><button data-t="riwayat">Riwayat</button><button data-t="kelola">Kelola meja dan QR</button></div>
- <section id="pantau"><div class="stats" id="stats"></div>
+ <section id="pantau"><div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="btn ghost sm" id="snd" onclick="toggleSnd()">Suara alarm: mati</button></div>
+  <div class="alert hide" id="alert" role="alert"></div><div class="stats" id="stats"></div>
   <div class="card"><div class="ch"><div><h3>Jam tersibuk</h3><p id="peak"></p></div>
    <div class="seg"><button data-r="7" class="on">7 hari</button><button data-r="30">30 hari</button><button data-r="0">Semua</button></div></div>
    <div class="bars" id="bars" role="img" aria-label="Grafik jumlah sesi per jam"></div></div><div class="tbl"><table><thead><tr><th>Meja</th><th>Zona</th><th>Status</th><th>Pengguna</th><th>Sensor</th><th></th></tr></thead><tbody id="bMon"></tbody></table></div></section>
@@ -67,8 +72,8 @@ const login=run(async()=>{const d=await fetch('/api/admin/login',{method:'POST',
  tk=d.token;sessionStorage.setItem('ak',tk);boot()});
 function logout(){tk=null;sessionStorage.removeItem('ak');clearInterval(tm);$('#gate').classList.remove('hide');$('#main').classList.add('hide');$('#out').classList.add('hide')}
 async function boot(){if(!tk)return;try{await load()}catch{return}
- $('#gate').classList.add('hide');$('#main').classList.remove('hide');$('#out').classList.remove('hide');renderManage();clearInterval(tm);tm=setInterval(()=>load().catch(()=>{}),10000)}
-async function load(){D=await api('/data');renderMon();renderChart();renderHist()}
+ $('#gate').classList.add('hide');$('#main').classList.remove('hide');$('#out').classList.remove('hide');renderManage();clearInterval(tm);tm=setInterval(()=>load().catch(()=>{}),5000)}
+async function load(){D=await api('/data');renderMon();renderAlert();renderChart();renderHist()}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
  ['pantau','riwayat','kelola'].forEach(t=>$('#'+t).classList.toggle('hide',t!==b.dataset.t))});
 const who=u=>u?esc(u.name)+'<br><small class="m">'+(u.role==='student'?'NIM '+esc(u.nim):'Tamu +'+esc(u.phone))+'</small>':'<small class="m">-</small>';
@@ -80,11 +85,22 @@ function renderMon(){const W=D.workspaces,H=D.history,today=new Date().toDateStr
  const avg=done.length?Math.round(done.reduce((a,h)=>a+mins(h.started_at,h.ended_at),0)/done.length):0;
  $('#stats').innerHTML=[[used+' / '+W.length,'Meja dipakai'],[td.length,'Sesi hari ini'],[fmtD(avg),'Rata-rata durasi'],[W.filter(w=>!w.online).length,'Sensor offline']].map(([v,l])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('');
  $('#bMon').innerHTML=W.map(w=>{const st=w.session?'occupied':(w.online&&w.present)?'detected':'available';
-  return `<tr><td><b>${esc(w.name)}</b><br><small class="m">${esc(w.code)}</small></td><td>${esc(w.zone)}</td>
+  return `<tr class="${st==='detected'?'warn':''}"><td><b>${esc(w.name)}</b><br><small class="m">${esc(w.code)}</small></td><td>${esc(w.zone)}</td>
   <td><span class="pill ${st}">${{available:'Tersedia',occupied:'Dipakai',detected:'Ada orang'}[st]}</span></td>
   <td>${who(w.session?.users)}${w.session?'<br><small class="m">'+fmtD(mins(w.session.started_at))+'</small>':''}</td>
   <td><span class="dot ${w.online?'on':''}"></span>${w.online?(w.distance!=null?Math.round(w.distance)+' cm':'online'):'offline'}</td>
   <td>${w.session?`<button class="btn red sm" onclick="force('${esc(w.code)}')">Paksa check-out</button>`:''}</td></tr>`}).join('')}
+let snd=false,seen={},ac;
+const ago=t=>{const m=Math.floor((Date.now()-t)/6e4);return m<1?'baru saja':m+' mnt'};
+function beep(){try{ac=ac||new AudioContext();[0,.25,.5].forEach(t=>{const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=880;g.gain.value=.15;o.connect(g);g.connect(ac.destination);o.start(ac.currentTime+t);o.stop(ac.currentTime+t+.15)})}catch{}}
+function toggleSnd(){snd=!snd;$('#snd').textContent='Suara alarm: '+(snd?'aktif':'mati');if(snd)beep()}
+function renderAlert(){const det=D.workspaces.filter(w=>!w.session&&w.online&&w.present),codes=det.map(w=>w.code);let fresh=false;
+ det.forEach(w=>{if(!seen[w.code]){seen[w.code]=Date.now();fresh=true}});
+ Object.keys(seen).forEach(c=>{if(!codes.includes(c))delete seen[c]});
+ const a=$('#alert');a.classList.toggle('hide',!det.length);
+ a.textContent=det.length?`Perhatian: ${det.length} meja terdeteksi ada orang tanpa scan QR. ${det.map(w=>w.name+' ('+ago(seen[w.code])+')').join(', ')}`:'';
+ document.title=(det.length?`(${det.length}) `:'')+'Admin – Ruang Kita';
+ if(fresh&&snd)beep()}
 let rng=7;
 document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{rng=+b.dataset.r;document.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x===b));renderChart()});
 function renderChart(){const lim=rng?Date.now()-rng*864e5:0,c=Array(24).fill(0);

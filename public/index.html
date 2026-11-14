@@ -46,6 +46,11 @@ main{max-width:1200px;margin:auto;padding:24px clamp(16px,4vw,40px) 120px}
 .desk.available{border-color:var(--free)}.desk.occupied{border-color:var(--busy);background:color-mix(in srgb,var(--busy) 12%,var(--bg))}.desk.detected{border-color:var(--det);background:color-mix(in srgb,var(--det) 14%,var(--bg))}
 .desk.available small{color:var(--free)}.desk.occupied small{color:var(--busy)}.desk.detected small{color:var(--det)}
 .desk .dot{position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--line)}.desk .dot.on{background:var(--free);box-shadow:0 0 0 3px color-mix(in srgb,var(--free) 25%,transparent)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:22px}.card h2{font-size:18px}.card p{margin:2px 0 0;color:var(--mute);font-size:13.5px}
+.bars{display:grid;grid-template-columns:repeat(17,1fr);gap:4px;height:170px;margin-top:16px}.bar{display:flex;flex-direction:column;height:100%}.bar .t{flex:1;display:flex;align-items:flex-end}
+.bar i{display:block;width:100%;height:var(--h);min-height:3px;background:var(--acc);opacity:.5;border-radius:5px 5px 0 0}.bar.pk i{opacity:1;background:var(--busy)}.bar.now i{outline:2px solid var(--ink);outline-offset:1px}
+.bar span{font-size:10.5px;text-align:center;color:var(--mute);height:16px;line-height:16px}
+@media(max-width:640px){.bar:not(:nth-child(2n+1)) span{visibility:hidden}}
 .fab{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);padding:15px 28px;border-radius:99px;font-size:16px;box-shadow:0 8px 24px #2447f566}
 dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background:var(--panel);color:var(--ink)}dialog::backdrop{background:#0a122399}
 #reader{border-radius:12px;overflow:hidden;margin:12px 0}#qr{display:grid;place-items:center;padding:14px;background:#fff;border-radius:12px;margin:12px 0}
@@ -67,7 +72,7 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
   <div id="pO" class="hide" style="gap:14px"><label>Nama<input id="gName" placeholder="Nama lengkap"></label>
    <label>Nomor WhatsApp<input id="gPhone" inputmode="tel" placeholder="08123456789"></label>
    <button class="btn" onclick="reqOtp()">Kirim kode OTP</button>
-   <div id="otpBox" style="display:none;gap:14px"><label>Kode OTP<input id="gOtp" inputmode="numeric" maxlength="6" placeholder="6 digit"></label> 
+   <div id="otpBox" style="display:none;gap:14px"><label>Kode OTP<input id="gOtp" inputmode="numeric" maxlength="6" placeholder="6 digit"></label>
     <button class="btn" onclick="verOtp()">Verifikasi dan masuk</button></div>
    <p class="hint" id="devHint"></p></div></div>
 </section>
@@ -76,6 +81,7 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
  <div class="banner hide" id="banner"><div><h3 id="bWs"></h3><span id="bZone"></span></div><div class="t" id="bTime"></div><button class="btn busy" onclick="checkout()">Check-out</button></div>
  <div class="stats"><div class="stat f"><b id="sF">0</b>Tersedia</div><div class="stat b"><b id="sB">0</b>Dipakai</div><div class="stat d"><b id="sD">0</b>Terdeteksi sensor</div></div>
  <div class="chips" id="chips"></div><div class="plan" id="plan"></div>
+ <div class="card"><h2>Jam tersibuk</h2><p id="busyTxt">Memuat...</p><div class="bars" id="bars" role="img" aria-label="Grafik keramaian per jam"></div><p>Garis tepi hitam menandai jam sekarang.</p></div>
  <button class="btn fab" onclick="openScan()">Scan QR meja</button>
 </main>
 
@@ -102,8 +108,13 @@ function logout(){token=null;localStorage.removeItem('tk');clearInterval(timer);
 async function boot(){if(!token)return;try{me=await api('/me')}catch{return}
  $('#login').classList.add('hide');$('#app').classList.remove('hide');$('#who').classList.remove('hide');
  $('#uName').textContent=me.user.name;$('#uRole').textContent=me.user.role==='student'?'Mahasiswa · '+me.user.nim:'Tamu · +'+me.user.phone;
- refresh();clearInterval(timer);timer=setInterval(()=>{tick();if(++n%5===0)refresh()},1000)}
+ refresh();loadBusy();clearInterval(timer);timer=setInterval(()=>{tick();if(++n%5===0)refresh();if(n%300===0)loadBusy()},1000)}
 let n=0;
+async function loadBusy(){try{renderBusy(await api('/stats/busy?days=7'))}catch{}}
+function renderBusy(d){const H=[];for(let h=6;h<=22;h++)H.push(h);const c=H.map(h=>d.hours[h]),mx=Math.max(...c),pad=h=>String(h).padStart(2,'0');
+ const day=H.map((h,i)=>[h,c[i]]).filter(x=>x[0]>=8&&x[0]<=20),pk=day.reduce((a,b)=>b[1]>a[1]?b:a),qt=day.reduce((a,b)=>b[1]<a[1]?b:a);
+ $('#busyTxt').textContent=mx?`Berdasarkan ${d.days} hari terakhir: biasanya paling ramai sekitar pukul ${pad(pk[0])}.00 dan paling lengang sekitar pukul ${pad(qt[0])}.00.`:'Belum cukup data untuk menampilkan pola keramaian.';
+ $('#bars').innerHTML=H.map((h,i)=>`<div class="bar ${mx&&c[i]===mx?'pk':''} ${h===d.nowHour?'now':''}" title="${pad(h)}.00 – ${c[i]} sesi"><div class="t"><i style="--h:${mx?c[i]/mx*100:0}%"></i></div><span>${pad(h)}</span></div>`).join('')}
 async function refresh(){try{[ws,me]=await Promise.all([api('/workspaces'),api('/me')]);render()}catch{}}
 function tick(){const s=me?.session;if(!s)return;const x=Math.max(0,Date.now()-new Date(s.started_at));
  $('#bTime').textContent=[x/36e5,x/6e4%60,x/1e3%60].map(v=>String(Math.floor(v)).padStart(2,'0')).join(':')}

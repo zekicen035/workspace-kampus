@@ -82,6 +82,17 @@ app.post('/api/iot/telemetry',wrap(async(q,s)=>{
   const{data:ss}=await db.from('sessions').select('id').eq('workspace_id',w.id).is('ended_at',null).maybeSingle();
   s.json({state:ss?'occupied':present?'detected':'available'});
 }));
+// ---------- STATISTIK PUBLIK (agregat, tanpa data pribadi) ----------
+const TZ=Number(process.env.TZ_OFFSET_HOURS||7); // WIB = UTC+7
+const hourOf=t=>new Date(t+TZ*36e5).getUTCHours();
+app.get('/api/stats/busy',wrap(async(q,s)=>{
+  const days=Math.min(30,Math.max(1,parseInt(q.query.days)||7));
+  const{data}=await db.from('sessions').select('started_at,ended_at').gte('started_at',new Date(Date.now()-days*864e5).toISOString()).limit(2000);
+  const hours=Array(24).fill(0);
+  (data||[]).forEach(r=>{const end=r.ended_at?new Date(r.ended_at).getTime():Date.now(),seen=new Set();
+    for(let i=0,t=Math.floor(new Date(r.started_at).getTime()/36e5)*36e5;i<24&&t<=end;i++,t+=36e5){const h=hourOf(t);if(!seen.has(h)){seen.add(h);hours[h]++}}});
+  s.json({days,hours,nowHour:hourOf(Date.now())});
+}));
 // ---------- ADMIN ----------
 const adminAuth=(q,s,n)=>{try{if(!jwt.verify((q.headers.authorization||'').slice(7),SECRET).admin)throw 0;n()}
   catch{s.status(401).json({error:'Akses admin diperlukan'})}};
