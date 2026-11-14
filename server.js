@@ -7,6 +7,14 @@ const app=express();app.use(express.json());app.use(express.static(path.join(__d
 const sign=u=>jwt.sign({id:u.id},SECRET,{expiresIn:'12h'});
 const hash=s=>crypto.createHash('sha256').update(s+SECRET).digest('hex');
 const phoneNorm=p=>{p=String(p||'').replace(/\D/g,'');return p.startsWith('0')?'62'+p.slice(1):p};
+// ---------- SANDI (scrypt) & PEMBATAS PERCOBAAN ----------
+const scrypt=(pw,salt)=>new Promise((res,rej)=>crypto.scrypt(pw,salt,64,(e,k)=>e?rej(e):res(k)));
+async function hashPw(pw){const salt=crypto.randomBytes(16);return 'scrypt$'+salt.toString('hex')+'$'+(await scrypt(pw,salt)).toString('hex')}
+async function checkPw(pw,stored){if(!stored)return false;try{const[,salt,h]=stored.split('$');const k=await scrypt(pw,Buffer.from(salt,'hex')),a=Buffer.from(h,'hex');return a.length===k.length&&crypto.timingSafeEqual(a,k)}catch{return false}}
+const pwOk=p=>typeof p==='string'&&p.length>=8&&p.length<=72;
+const fails=new Map(); // maks 5 percobaan gagal per NIM dalam 15 menit
+const locked=k=>{const f=fails.get(k);return !!f&&f.n>=5&&Date.now()-f.t<9e5};
+const fail=k=>{const f=fails.get(k);fails.set(k,f&&Date.now()-f.t<9e5?{n:f.n+1,t:f.t}:{n:1,t:Date.now()})};
 const wrap=fn=>(q,s)=>fn(q,s).catch(e=>{console.error(e);s.status(500).json({error:'Terjadi kesalahan server'})});
 const auth=async(q,s,n)=>{try{const{id}=jwt.verify((q.headers.authorization||'').slice(7),SECRET);
   const{data}=await db.from('users').select('*').eq('id',id).single();if(!data)throw 0;q.user=data;n()}
@@ -19,6 +27,10 @@ app.post('/api/auth/nim',wrap(async(q,s)=>{
   if(!st){const{data:rg}=await db.from('registrations').select('status').eq('nim',nim).maybeSingle();
     const msg=rg?.status==='pending'?'Pendaftaran kamu masih menunggu persetujuan admin.':rg?.status==='rejected'?'Pendaftaran ditolak. Hubungi admin atau daftar ulang.':'NIM belum terdaftar. Silakan daftar dulu.';
     return s.status(404).json({error:msg,canRegister:!rg||rg.status==='rejected'})}
+  if(locked(nim))return s.status(429).json({error:'Terlalu banyak percobaan. Coba lagi 15 menit lagi.'});
+  if(!st.password_hash)return s.status(403).json({error:'Akun ini belum punya sandi. Hubungi admin untuk mengatur sandi.'});
+  if(!await checkPw(String(q.body.password||''),st.password_hash)){fail(nim);return s.status(401).json({error:'NIM atau sandi salah'})}
+  fails.delete(nim);
   let{data:u}=await db.from('users').select('*').eq('nim',nim).maybeSingle();
   if(!u)({data:u}=await db.from('users').insert({nim,name:st.name,role:'student'}).select().single());
   s.json({token:sign(u),user:u});
@@ -102,13 +114,15 @@ async function sendWa(phone,message){ // notifikasi best-effort, tidak menggagal
 app.post('/api/register/verify',wrap(async(q,s)=>{
   const nim=String(q.body.nim||'').trim(),name=String(q.body.name||'').trim(),major=String(q.body.major||'').trim().slice(0,80),phone=phoneNorm(q.body.phone),code=String(q.body.code||'');
   if(!/^[A-Za-z0-9./-]{5,25}$/.test(nim)||name.length<3||major.length<2)return s.status(400).json({error:'Isi nama, NIM, dan program studi dengan benar'});
+  const password=String(q.body.password||'');
+  if(!pwOk(password))return s.status(400).json({error:'Sandi minimal 8 karakter'});
   if(!/^62\d{8,13}$/.test(phone))return s.status(400).json({error:'Nomor WhatsApp tidak valid'});
   const{data:st}=await db.from('students').select('nim').eq('nim',nim).maybeSingle();
   if(st)return s.status(409).json({error:'NIM ini sudah terdaftar, silakan langsung login.'});
   const{data:rg}=await db.from('registrations').select('status').eq('nim',nim).maybeSingle();
   if(rg?.status==='pending')return s.status(409).json({error:'Pendaftaran NIM ini sudah menunggu persetujuan admin.'});
   if(!await checkOtp(phone,code))return s.status(400).json({error:'OTP salah atau sudah kedaluwarsa'});
-  await db.from('registrations').upsert({nim,name,major,phone,status:'pending',created_at:new Date().toISOString(),decided_at:null},{onConflict:'nim'});
+  await db.from('registrations').upsert({nim,name,major,phone,password_hash:await hashPw(password),status:'pending',created_at:new Date().toISOString(),decided_at:null},{onConflict:'nim'});
   s.json({ok:true,message:'Pendaftaran terkirim. Tunggu persetujuan admin, lalu login dengan NIM.'});
 }));
 
@@ -160,16 +174,25 @@ app.delete('/api/admin/workspaces/:code',adminAuth,wrap(async(q,s)=>{
   s.json({ok:true});
 }));
 
+app.post('/api/admin/students/:nim/password',adminAuth,wrap(async(q,s)=>{
+  const password=String(q.body.password||'');
+  if(!pwOk(password))return s.status(400).json({error:'Sandi minimal 8 karakter'});
+  const{data:st}=await db.from('students').select('nim').eq('nim',q.params.nim).maybeSingle();
+  if(!st)return s.status(404).json({error:'NIM tidak ditemukan di daftar mahasiswa'});
+  await db.from('students').update({password_hash:await hashPw(password)}).eq('nim',q.params.nim);
+  fails.delete(q.params.nim);
+  s.json({ok:true});
+}));
 app.get('/api/admin/registrations',adminAuth,wrap(async(q,s)=>{
-  const{data}=await db.from('registrations').select('*').order('created_at',{ascending:false}).limit(200);
+  const{data}=await db.from('registrations').select('nim,name,major,phone,status,created_at,decided_at').order('created_at',{ascending:false}).limit(200);
   s.json((data||[]).sort((a,b)=>(b.status==='pending')-(a.status==='pending')));
 }));
 app.post('/api/admin/registrations/:nim/:act',adminAuth,wrap(async(q,s)=>{
   const{nim,act}=q.params;if(!['approve','reject'].includes(act))return s.status(400).json({error:'Aksi tidak valid'});
   const{data:r}=await db.from('registrations').select('*').eq('nim',nim).maybeSingle();
   if(!r)return s.status(404).json({error:'Pendaftaran tidak ditemukan'});
-  if(act==='approve')await db.from('students').upsert({nim:r.nim,name:r.name,major:r.major},{onConflict:'nim'});
-  await db.from('registrations').update({status:act==='approve'?'approved':'rejected',decided_at:new Date().toISOString()}).eq('nim',nim);
+  if(act==='approve')await db.from('students').upsert({nim:r.nim,name:r.name,major:r.major,phone:r.phone,...(r.password_hash?{password_hash:r.password_hash}:{})},{onConflict:'nim'});
+  await db.from('registrations').update({status:act==='approve'?'approved':'rejected',decided_at:new Date().toISOString(),password_hash:null}).eq('nim',nim);
   sendWa(r.phone,act==='approve'?`Pendaftaran NIM ${r.nim} di Ruang Kita disetujui. Silakan login dengan NIM kamu.`:`Pendaftaran NIM ${r.nim} di Ruang Kita ditolak. Hubungi admin untuk info lebih lanjut.`);
   s.json({ok:true});
 }));

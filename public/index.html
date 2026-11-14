@@ -64,11 +64,22 @@ main{max-width:1200px;margin:auto;padding:24px clamp(16px,4vw,40px) 120px}
 .md:focus-visible{outline:3px solid var(--acc)}
 .pill{display:inline-block;padding:3px 12px;border-radius:99px;font-weight:700;font-size:13px;color:#fff}
 .pill.available{background:var(--free)}.pill.occupied{background:var(--busy)}.pill.detected{background:var(--det);color:#0E1B33}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:22px}.card h2{font-size:18px}.card p{margin:2px 0 0;color:var(--mute);font-size:13.5px}
-.bars{display:grid;grid-template-columns:repeat(17,1fr);gap:4px;height:170px;margin-top:16px}.bar{display:flex;flex-direction:column;height:100%}.bar .t{flex:1;display:flex;align-items:flex-end}
-.bar i{display:block;width:100%;height:var(--h);min-height:3px;background:var(--acc);opacity:.5;border-radius:5px 5px 0 0}.bar.pk i{opacity:1;background:var(--busy)}.bar.now i{outline:2px solid var(--ink);outline-offset:1px}
-.bar span{font-size:10.5px;text-align:center;color:var(--mute);height:16px;line-height:16px}
-@media(max-width:640px){.bar:not(:nth-child(2n+1)) span{visibility:hidden}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin-top:22px}
+.bh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}.card h2{font-size:20px}.card p{margin:2px 0 0;color:var(--mute);font-size:13.5px}
+.seg{display:flex;background:var(--bg);border-radius:10px;padding:3px}.seg button{border:0;background:none;color:var(--mute);padding:6px 14px;border-radius:8px;font-weight:600;font-size:13px}.seg .on{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px #0002}
+.chips2{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}.chip2{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:99px;padding:6px 13px;font-size:13px;background:var(--bg)}.chip2 b{font-family:Outfit,sans-serif}.chip2 i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.plot{display:grid;grid-template-columns:repeat(17,1fr);gap:6px;height:180px;margin-top:14px;background-image:linear-gradient(to bottom,var(--line) 1px,transparent 1px);background-size:100% 25%;border-bottom:1px solid var(--line)}
+.bar{all:unset;box-sizing:border-box;display:flex;align-items:flex-end;height:100%;cursor:pointer;border-radius:8px}
+.bar .fill{display:block;width:100%;height:var(--h);min-height:5px;border-radius:9px 9px 3px 3px;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 62%,#fff),var(--c));transform-origin:bottom}
+.bar:hover .fill,.bar:focus-visible .fill,.bar.sel .fill{filter:saturate(1.25) brightness(1.07)}.bar:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.bar.now .fill{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--ink)}
+.xl{display:grid;grid-template-columns:repeat(17,1fr);gap:6px;margin-top:6px}.xl span{font-size:11px;color:var(--mute);text-align:center}.xl .now{color:var(--ink);font-weight:700}
+.readout{margin-top:14px;padding:11px 14px;border-radius:12px;background:var(--bg);font-size:14px;min-height:44px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12.5px;color:var(--mute)}.legend span{display:inline-flex;align-items:center;gap:6px}.lg{width:12px;height:12px;border-radius:4px;background:var(--c)}
+.lv-l{--c:var(--free)}.lv-m{--c:var(--det)}.lv-h{--c:var(--busy)}.lv-0{--c:var(--line)}
+@keyframes grow{from{transform:scaleY(0)}}
+@media(prefers-reduced-motion:no-preference){.bar .fill{animation:grow .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0ms)}}
+@media(max-width:640px){.plot,.xl{gap:3px}.xl span:nth-child(even){visibility:hidden}.card{padding:16px}}
 .fab{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);padding:15px 28px;border-radius:99px;font-size:16px;box-shadow:0 8px 24px #2447f566}
 dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background:var(--panel);color:var(--ink)}dialog::backdrop{background:#0a122399}
 #reader{border-radius:12px;overflow:hidden;margin:12px 0}
@@ -86,7 +97,7 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
  <div class="box"><h2>Masuk</h2>
   <div class="tabs"><button id="tN" class="on" onclick="tab('N')">Mahasiswa</button><button id="tO" onclick="tab('O')">Tamu (WhatsApp)</button></div>
   <div id="pN" style="display:grid;gap:14px"><label>NIM<input id="nim" placeholder="Masukkan NIM kamu"></label>
-   <button class="btn" onclick="loginNim()">Masuk dengan NIM</button><button class="link" onclick="showReg()">Belum terdaftar? Daftar di sini</button></div>
+   <label>Sandi<input id="pw" type="password" autocomplete="current-password" placeholder="Sandi akunmu" onkeydown="event.key==='Enter'&&loginNim()"></label><button class="btn" onclick="loginNim()">Masuk</button><button class="link" onclick="showReg()">Belum terdaftar? Daftar di sini</button></div>
   <div id="pO" class="hide" style="gap:14px"><label>Nama<input id="gName" placeholder="Nama lengkap"></label>
    <label>Nomor WhatsApp<input id="gPhone" inputmode="tel" placeholder="08123456789"></label>
    <button class="btn" onclick="reqOtp()">Kirim kode OTP</button>
@@ -98,7 +109,7 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
    <label>NIM<input id="rNim" placeholder="Masukkan NIM kamu"></label>
    <label>Program studi<input id="rMajor" placeholder="Ketik program studi kamu"></label>
    <label>Nomor WhatsApp<input id="rPhone" inputmode="tel" placeholder="08123456789"></label>
-   <button class="btn" onclick="regOtp()">Kirim kode OTP</button>
+   <label>Buat sandi (minimal 8 karakter)<input id="rPw" type="password" autocomplete="new-password"></label><label>Ulangi sandi<input id="rPw2" type="password" autocomplete="new-password"></label><button class="btn" onclick="regOtp()">Kirim kode OTP</button>
    <div id="rBox" class="hide stack"><label>Kode OTP<input id="rOtp" inputmode="numeric" maxlength="6" placeholder="6 digit"></label><button class="btn" onclick="regSubmit()">Kirim pendaftaran</button></div>
    <p class="hint" id="rHint">Pendaftaran diperiksa admin dulu sebelum akunmu aktif.</p>
    <button class="link" onclick="tab('N')">Kembali ke login</button></div></div>
@@ -108,7 +119,12 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
  <div class="banner hide" id="banner"><div><h3 id="bWs"></h3><span id="bZone"></span></div><div class="t" id="bTime"></div><button class="btn busy" onclick="checkout()">Check-out</button></div>
  <div class="stats"><div class="stat f"><b id="sF">0</b>Tersedia</div><div class="stat b"><b id="sB">0</b>Dipakai</div><div class="stat d"><b id="sD">0</b>Terdeteksi sensor</div></div>
  <div class="chips" id="chips"></div><div class="plan" id="plan"></div>
- <div class="card"><h2>Jam tersibuk</h2><p id="busyTxt">Memuat...</p><div class="bars" id="bars" role="img" aria-label="Grafik keramaian per jam"></div><p>Garis tepi hitam menandai jam sekarang.</p></div>
+ <div class="card"><div class="bh"><div><h2>Jam tersibuk</h2><p id="busyTxt">Memuat...</p></div>
+  <div class="seg" id="seg"><button data-d="7" class="on">7 hari</button><button data-d="30">30 hari</button></div></div>
+  <div class="chips2" id="busyChips"></div>
+  <div class="plot" id="bars"></div><div class="xl" id="xl"></div>
+  <div class="readout" id="readout" aria-live="polite">Memuat...</div>
+  <div class="legend"><span><b class="lg lv-l"></b>Lengang</span><span><b class="lg lv-m"></b>Sedang</span><span><b class="lg lv-h"></b>Ramai</span><span>Garis tepi hitam = jam sekarang</span></div></div>
  <button class="btn fab" onclick="openScan()">Scan QR meja</button>
 </main>
 
@@ -127,12 +143,12 @@ async function api(p,o={}){const r=await fetch('/api'+p,{...o,headers:{'Content-
 function toast(m,err){const t=document.createElement('div');t.className='toast'+(err?' err':'');t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),3500)}
 const run=f=>async(...a)=>{try{await f(...a)}catch(e){toast(e.message,1)}};
 function tab(k){$('#pR').classList.add('hide');['N','O'].forEach(x=>{$('#t'+x).classList.toggle('on',x===k);$('#p'+x).classList.toggle('hide',x!==k)});$('#pO').style.display=k==='O'?'grid':'none'}
-function start(d){token=d.token;localStorage.setItem('tk',token);boot()}
+function start(d){['#pw','#rPw','#rPw2'].forEach(i=>$(i).value='');token=d.token;localStorage.setItem('tk',token);boot()}
 function showReg(){['N','O'].forEach(x=>{$('#t'+x).classList.remove('on');$('#p'+x).classList.add('hide')});$('#pR').classList.remove('hide')}
-const loginNim=run(async()=>{try{start(await api('/auth/nim',{method:'POST',body:{nim:$('#nim').value}}))}catch(e){if(e.data?.canRegister){$('#rNim').value=$('#nim').value;showReg()}throw e}});
+const loginNim=run(async()=>{try{start(await api('/auth/nim',{method:'POST',body:{nim:$('#nim').value,password:$('#pw').value}}))}catch(e){if(e.data?.canRegister){$('#rNim').value=$('#nim').value;showReg()}throw e}});
 const regOtp=run(async()=>{const d=await api('/auth/otp/request',{method:'POST',body:{phone:$('#rPhone').value}});$('#rBox').classList.remove('hide');toast('OTP dikirim ke WhatsApp');if(d.devCode)$('#rHint').textContent='Mode demo – kode OTP: '+d.devCode});
-const regSubmit=run(async()=>{const d=await api('/register/verify',{method:'POST',body:{nim:$('#rNim').value,name:$('#rName').value,major:$('#rMajor').value,phone:$('#rPhone').value,code:$('#rOtp').value}});
- toast(d.message);$('#nim').value=$('#rNim').value;$('#rBox').classList.add('hide');$('#rOtp').value='';tab('N')});
+const regSubmit=run(async()=>{if($('#rPw').value!==$('#rPw2').value)throw new Error('Sandi dan ulangi sandi tidak sama');const d=await api('/register/verify',{method:'POST',body:{nim:$('#rNim').value,name:$('#rName').value,major:$('#rMajor').value,phone:$('#rPhone').value,password:$('#rPw').value,code:$('#rOtp').value}});
+ toast(d.message);$('#nim').value=$('#rNim').value;$('#rBox').classList.add('hide');$('#rOtp').value='';['#rPw','#rPw2'].forEach(i=>$(i).value='');tab('N')});
 const reqOtp=run(async()=>{const d=await api('/auth/otp/request',{method:'POST',body:{phone:$('#gPhone').value}});
  $('#otpBox').style.display='grid';toast('OTP dikirim ke WhatsApp');if(d.devCode)$('#devHint').textContent='Mode demo (tanpa Fonnte) – kode OTP: '+d.devCode});
 const verOtp=run(async()=>start(await api('/auth/otp/verify',{method:'POST',body:{phone:$('#gPhone').value,code:$('#gOtp').value,name:$('#gName').value}})));
@@ -142,11 +158,23 @@ async function boot(){if(!token)return;try{me=await api('/me')}catch{return}
  $('#uName').textContent=me.user.name;$('#uRole').textContent=me.user.role==='student'?'Mahasiswa · '+(me.user.major?me.user.major+' · ':'')+me.user.nim:'Tamu · +'+me.user.phone;
  refresh();loadBusy();clearInterval(timer);timer=setInterval(()=>{tick();if(++n%5===0)refresh();if(n%300===0)loadBusy()},1000)}
 let n=0;
-async function loadBusy(){try{renderBusy(await api('/stats/busy?days=7'))}catch{}}
-function renderBusy(d){const H=[];for(let h=6;h<=22;h++)H.push(h);const c=H.map(h=>d.hours[h]),mx=Math.max(...c),pad=h=>String(h).padStart(2,'0');
- const day=H.map((h,i)=>[h,c[i]]).filter(x=>x[0]>=8&&x[0]<=20),pk=day.reduce((a,b)=>b[1]>a[1]?b:a),qt=day.reduce((a,b)=>b[1]<a[1]?b:a);
- $('#busyTxt').textContent=mx?`Berdasarkan ${d.days} hari terakhir: biasanya paling ramai sekitar pukul ${pad(pk[0])}.00 dan paling lengang sekitar pukul ${pad(qt[0])}.00.`:'Belum cukup data untuk menampilkan pola keramaian.';
- $('#bars').innerHTML=H.map((h,i)=>`<div class="bar ${mx&&c[i]===mx?'pk':''} ${h===d.nowHour?'now':''}" title="${pad(h)}.00 – ${c[i]} sesi"><div class="t"><i style="--h:${mx?c[i]/mx*100:0}%"></i></div><span>${pad(h)}</span></div>`).join('')}
+let busyDays=7;
+document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>{busyDays=+b.dataset.d;document.querySelectorAll('#seg button').forEach(x=>x.classList.toggle('on',x===b));loadBusy()});
+async function loadBusy(){try{renderBusy(await api('/stats/busy?days='+busyDays))}catch{}}
+function renderBusy(d){
+ const H=[];for(let h=6;h<=22;h++)H.push(h);
+ const c=H.map(h=>d.hours[h]),mx=Math.max(...c),pad=h=>String(h).padStart(2,'0'),t=h=>pad(h)+'.00';
+ const lv=v=>!mx||!v?'0':v/mx>=.67?'h':v/mx>=.34?'m':'l',NAME={0:'Kosong',l:'Lengang',m:'Sedang',h:'Ramai'};
+ const day=H.map((h,i)=>[h,c[i]]).filter(x=>x[0]>=8&&x[0]<=20),pk=day.reduce((a,b)=>b[1]>a[1]?b:a),qt=day.reduce((a,b)=>b[1]<a[1]?b:a),nowI=H.indexOf(d.nowHour);
+ $('#busyTxt').textContent=mx?`Pola keramaian ${d.days} hari terakhir, dibandingkan dengan jam tersibuk.`:'Belum cukup data untuk menampilkan pola keramaian.';
+ $('#busyChips').innerHTML=mx?[nowI>=0?`<span class="chip2 lv-${lv(c[nowI])}"><i></i>Sekarang <b>${NAME[lv(c[nowI])]}</b></span>`:'',
+  `<span class="chip2 lv-h"><i></i>Paling ramai <b>${t(pk[0])}</b></span>`,`<span class="chip2 lv-l"><i></i>Paling lengang <b>${t(qt[0])}</b></span>`].join(''):'';
+ $('#bars').innerHTML=H.map((h,i)=>`<button class="bar lv-${lv(c[i])} ${h===d.nowHour?'now':''}" aria-label="Pukul ${t(h)}, ${c[i]} sesi, ${NAME[lv(c[i])]}" style="--h:${mx?Math.max(c[i]/mx*100,3):3}%;--d:${i*25}ms"><span class="fill"></span></button>`).join('');
+ $('#xl').innerHTML=H.map(h=>`<span class="${h===d.nowHour?'now':''}">${pad(h)}</span>`).join('');
+ const bs=[...document.querySelectorAll('#bars .bar')];
+ const show=i=>{bs.forEach((b,j)=>b.classList.toggle('sel',j===i));$('#readout').textContent=`Pukul ${t(H[i])} - ${c[i]} sesi aktif, ${NAME[lv(c[i])]}`};
+ const home=()=>{bs.forEach(b=>b.classList.remove('sel'));$('#readout').textContent=nowI>=0?`Sekarang pukul ${t(H[nowI])} - ${c[nowI]} sesi aktif, ${NAME[lv(c[nowI])]}. Arahkan atau ketuk batang untuk melihat jam lain.`:'Arahkan atau ketuk batang untuk melihat detail tiap jam.'};
+ bs.forEach((b,i)=>{b.onmouseenter=b.onfocus=b.onclick=()=>show(i)});$('#bars').onmouseleave=home;home()}
 async function refresh(){try{[ws,me]=await Promise.all([api('/workspaces'),api('/me')]);render()}catch{}}
 function tick(){const s=me?.session;if(!s)return;const x=Math.max(0,Date.now()-new Date(s.started_at));
  $('#bTime').textContent=[x/36e5,x/6e4%60,x/1e3%60].map(v=>String(Math.floor(v)).padStart(2,'0')).join(':')}
