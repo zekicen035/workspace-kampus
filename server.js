@@ -31,7 +31,8 @@ app.post('/api/auth/otp/request',wrap(async(q,s)=>{
   const message=`Kode OTP Workspace Kampus: ${code}. Berlaku 5 menit. Jangan bagikan ke siapa pun.`;
   if(process.env.FONNTE_TOKEN){
     const f=await fetch('https://api.fonnte.com/send',{method:'POST',headers:{Authorization:process.env.FONNTE_TOKEN},body:new URLSearchParams({target:phone,message})});
-    if(!f.ok)return s.status(502).json({error:'Gagal mengirim WhatsApp'});
+    const j=await f.json().catch(()=>({}));
+    if(!f.ok||j.status===false){console.error('[FONNTE]',j.reason||f.status);return s.status(502).json({error:'Gagal mengirim WhatsApp: '+(j.reason||'periksa perangkat Fonnte')})}
     return s.json({ok:true});
   }
   console.log('[DEV OTP]',phone,code);s.json({ok:true,devCode:code}); // mode demo: tanpa FONNTE_TOKEN
