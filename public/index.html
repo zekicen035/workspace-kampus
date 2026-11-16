@@ -67,19 +67,30 @@ main{max-width:1200px;margin:auto;padding:24px clamp(16px,4vw,40px) 120px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin-top:22px}
 .bh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}.card h2{font-size:20px}.card p{margin:2px 0 0;color:var(--mute);font-size:13.5px}
 .seg{display:flex;background:var(--bg);border-radius:10px;padding:3px}.seg button{border:0;background:none;color:var(--mute);padding:6px 14px;border-radius:8px;font-weight:600;font-size:13px}.seg .on{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px #0002}
-.chips2{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}.chip2{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:99px;padding:6px 13px;font-size:13px;background:var(--bg)}.chip2 b{font-family:Outfit,sans-serif}.chip2 i{width:9px;height:9px;border-radius:50%;background:var(--c)}
-.plot{display:grid;grid-template-columns:repeat(17,1fr);gap:6px;height:180px;margin-top:14px;background-image:linear-gradient(to bottom,var(--line) 1px,transparent 1px);background-size:100% 25%;border-bottom:1px solid var(--line)}
-.bar{all:unset;box-sizing:border-box;display:flex;align-items:flex-end;height:100%;cursor:pointer;border-radius:8px}
-.bar .fill{display:block;width:100%;height:var(--h);min-height:5px;border-radius:9px 9px 3px 3px;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 62%,#fff),var(--c));transform-origin:bottom}
-.bar:hover .fill,.bar:focus-visible .fill,.bar.sel .fill{filter:saturate(1.25) brightness(1.07)}.bar:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-.bar.now .fill{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--ink)}
-.xl{display:grid;grid-template-columns:repeat(17,1fr);gap:6px;margin-top:6px}.xl span{font-size:11px;color:var(--mute);text-align:center}.xl .now{color:var(--ink);font-weight:700}
-.readout{margin-top:14px;padding:11px 14px;border-radius:12px;background:var(--bg);font-size:14px;min-height:44px}
-.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12.5px;color:var(--mute)}.legend span{display:inline-flex;align-items:center;gap:6px}.lg{width:12px;height:12px;border-radius:4px;background:var(--c)}
+.art{display:block;width:100%;max-width:520px;height:auto;margin-top:28px;filter:drop-shadow(0 18px 30px #0e1b3322)}
+.art .fl{fill:url(#fg);stroke:var(--line)}.tb{fill:color-mix(in srgb,var(--c) 16%,var(--panel));stroke:var(--c);stroke-width:2.5}.ch{fill:var(--line)}.lp{fill:var(--mute);opacity:.55}.art .pp{fill:var(--c)}
+.art .sf{--c:var(--free)}.art .sb{--c:var(--busy)}.art .sd{--c:var(--det)}.art .ph{fill:var(--ink)}.art .sc{fill:var(--panel)}.art .qk{fill:var(--ink)}.art .qf{fill:none;stroke:var(--ink);stroke-width:4}
+.art .fr{fill:none;stroke:var(--free);stroke-width:3;stroke-linecap:round}.art .scan{stroke:var(--free);stroke-width:2.5;stroke-linecap:round}.art .rg{fill:none;stroke:var(--det);stroke-width:2}
+.art .tg{fill:var(--panel);stroke:var(--line)}.art .tx{font:700 12.5px Figtree,sans-serif;fill:var(--ink)}.art .tm{font:600 11px Figtree,sans-serif;fill:var(--mute)}
+@keyframes rp{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(1.18)}}@keyframes sc{from{transform:translateY(0)}to{transform:translateY(46px)}}
+@media(prefers-reduced-motion:no-preference){.art .rg{transform-box:fill-box;transform-origin:center;animation:rp 1.8s ease-out infinite}.art .scan{animation:sc 2.4s ease-in-out infinite alternate}}
+.bt{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}.bt h2{font-size:22px}
+.lgd{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px;font-size:12.5px;color:var(--mute)}.lgd span{display:inline-flex;align-items:center;gap:6px}.lgd i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.upd{display:flex;align-items:center;gap:12px;color:var(--mute);font-size:13px}.upd .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:99px}
+.chips3{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px;align-items:center}
+.chip3{display:inline-flex;align-items:center;gap:10px;border-radius:18px;padding:10px 18px;font:700 18px Outfit,sans-serif}.chip3 em{font:700 12px Figtree,sans-serif;font-style:normal;padding:2px 10px;border-radius:99px;background:color-mix(in srgb,currentColor 14%,transparent)}
+.chip3.cb{background:color-mix(in srgb,var(--acc) 15%,var(--panel));color:var(--acc)}.chip3.cg{background:color-mix(in srgb,var(--free) 16%,var(--panel));color:var(--free)}.chip3.cy{background:color-mix(in srgb,var(--det) 20%,var(--panel));color:#9A6A00}
+@media(prefers-color-scheme:dark){.chip3.cy{color:var(--det)}}
+.chips3 .seg{margin-left:auto}
+.cv{margin-top:10px}.cv svg{display:block;width:100%;overflow:visible;touch-action:pan-y}
+.gl{stroke:var(--line);stroke-width:1;opacity:.7}.yl,.xt{font:600 11.5px Figtree,sans-serif;fill:var(--mute)}
+.ln{fill:none;stroke:var(--free);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}.pt{fill:var(--panel);stroke:var(--c);stroke-width:2.6}.pt.nw{fill:var(--acc);stroke:var(--panel);stroke-width:3}.halo{fill:var(--acc);opacity:.18}
+.sl{stroke:var(--mute);stroke-dasharray:3 4;opacity:0}
+.readout{margin-top:12px;padding:11px 14px;border-radius:12px;background:var(--bg);font-size:14px;min-height:44px}
 .lv-l{--c:var(--free)}.lv-m{--c:var(--det)}.lv-h{--c:var(--busy)}.lv-0{--c:var(--line)}
-@keyframes grow{from{transform:scaleY(0)}}
-@media(prefers-reduced-motion:no-preference){.bar .fill{animation:grow .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0ms)}}
-@media(max-width:640px){.plot,.xl{gap:3px}.xl span:nth-child(even){visibility:hidden}.card{padding:16px}}
+@keyframes dr{from{stroke-dashoffset:var(--len)}}@keyframes fi{from{opacity:0}}
+@media(prefers-reduced-motion:no-preference){.ln{stroke-dasharray:var(--len);animation:dr 1.1s ease-out both}.ar{animation:fi .9s ease-out both}}
+@media(max-width:640px){.card{padding:16px}.chip3{font-size:15px;padding:8px 13px}.chips3 .seg{margin-left:0}.upd{width:100%;justify-content:space-between}}
 .fab{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);padding:15px 28px;border-radius:99px;font-size:16px;box-shadow:0 8px 24px #2447f566}
 dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background:var(--panel);color:var(--ink)}dialog::backdrop{background:#0a122399}
 #reader{border-radius:12px;overflow:hidden;margin:12px 0}
@@ -93,7 +104,22 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
 <section class="login" id="login">
  <div class="hero"><h1>Cari meja kosong tanpa keliling kampus.</h1>
   <p>Lihat ketersediaan workspace secara langsung dari sensor, lalu check-in dengan scan QR di meja.</p>
-  <div class="mini" aria-hidden="true"><div class="f"></div><div class="b"></div><div class="f"></div><div class="d"></div><div class="b"></div><div class="f"></div><div class="b"></div><div class="f"></div><div class="f"></div><div class="d"></div><div class="f"></div><div class="b"></div></div></div>
+  <svg class="art" viewBox="0 0 480 300" role="img" aria-label="Ilustrasi denah workspace dengan status meja dan scan QR di ponsel">
+   <defs><linearGradient id="fg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--acc);stop-opacity:.16"/><stop offset="1" style="stop-color:var(--free);stop-opacity:.12"/></linearGradient>
+    <g id="dk"><rect class="ch" x="29" y="0" width="26" height="9" rx="4.5"/><rect class="tb" x="0" y="14" width="84" height="46" rx="12"/><rect class="lp" x="30" y="27" width="24" height="16" rx="3"/><rect class="ch" x="29" y="65" width="26" height="9" rx="4.5"/></g></defs>
+   <rect class="fl" x="3" y="3" width="474" height="294" rx="30"/>
+   <use href="#dk" class="sf" x="34" y="40"/><use href="#dk" class="sb" x="148" y="40"/><use href="#dk" class="sf" x="262" y="40"/>
+   <use href="#dk" class="sd" x="34" y="150"/><use href="#dk" class="sf" x="148" y="150"/><use href="#dk" class="sb" x="262" y="150"/>
+   <circle class="pp sb" cx="190" cy="44" r="8"/><circle class="pp sb" cx="304" cy="154" r="8"/><circle class="pp sd" cx="76" cy="154" r="8"/><rect class="rg" x="28" y="146" width="96" height="82" rx="16"/>
+   <rect class="tg" x="30" y="252" width="172" height="32" rx="16"/><circle class="pp sf" cx="50" cy="268" r="5"/><text class="tx" x="62" y="272">3 meja kosong</text>
+   <rect class="ph" x="366" y="26" width="96" height="190" rx="20"/><rect class="sc" x="372" y="34" width="84" height="174" rx="15"/>
+   <text class="tm" x="414" y="62" text-anchor="middle">Scan QR meja</text>
+   <g transform="translate(384 80)"><rect class="qf" x="2" y="2" width="16" height="16"/><rect class="qk" x="7" y="7" width="6" height="6"/><rect class="qf" x="42" y="2" width="16" height="16"/><rect class="qk" x="47" y="7" width="6" height="6"/><rect class="qf" x="2" y="42" width="16" height="16"/><rect class="qk" x="7" y="47" width="6" height="6"/>
+    <rect class="qk" x="26" y="4" width="6" height="6"/><rect class="qk" x="26" y="16" width="6" height="6"/><rect class="qk" x="22" y="28" width="6" height="6"/><rect class="qk" x="34" y="28" width="6" height="6"/><rect class="qk" x="46" y="30" width="6" height="6"/><rect class="qk" x="28" y="42" width="6" height="6"/><rect class="qk" x="42" y="44" width="6" height="6"/><rect class="qk" x="50" y="50" width="6" height="6"/><rect class="qk" x="30" y="52" width="6" height="6"/>
+    <line class="scan" x1="-2" x2="62" y1="6" y2="6"/></g>
+   <path class="fr" d="M378 88v-14h14M436 74h14v14M450 132v14h-14M392 146h-14v-14"/>
+   <text class="tm" x="414" y="166" text-anchor="middle">WS-A01</text><rect class="pp sf" x="384" y="176" width="60" height="24" rx="12"/><text x="414" y="192" text-anchor="middle" style="font:700 10.5px Figtree,sans-serif;fill:#fff">Check-in</text>
+  </svg></div>
  <div class="box"><h2>Masuk</h2>
   <div class="tabs"><button id="tN" class="on" onclick="tab('N')">Mahasiswa</button><button id="tO" onclick="tab('O')">Tamu (WhatsApp)</button></div>
   <div id="pN" style="display:grid;gap:14px"><label>NIM<input id="nim" placeholder="Masukkan NIM kamu"></label>
@@ -119,12 +145,12 @@ dialog{border:0;border-radius:18px;padding:22px;width:min(420px,92vw);background
  <div class="banner hide" id="banner"><div><h3 id="bWs"></h3><span id="bZone"></span></div><div class="t" id="bTime"></div><button class="btn busy" onclick="checkout()">Check-out</button></div>
  <div class="stats"><div class="stat f"><b id="sF">0</b>Tersedia</div><div class="stat b"><b id="sB">0</b>Dipakai</div><div class="stat d"><b id="sD">0</b>Terdeteksi sensor</div></div>
  <div class="chips" id="chips"></div><div class="plan" id="plan"></div>
- <div class="card"><div class="bh"><div><h2>Jam tersibuk</h2><p id="busyTxt">Memuat...</p></div>
-  <div class="seg" id="seg"><button data-d="7" class="on">7 hari</button><button data-d="30">30 hari</button></div></div>
-  <div class="chips2" id="busyChips"></div>
-  <div class="plot" id="bars"></div><div class="xl" id="xl"></div>
-  <div class="readout" id="readout" aria-live="polite">Memuat...</div>
-  <div class="legend"><span><b class="lg lv-l"></b>Lengang</span><span><b class="lg lv-m"></b>Sedang</span><span><b class="lg lv-h"></b>Ramai</span><span>Garis tepi hitam = jam sekarang</span></div></div>
+ <div class="card"><div class="bt"><div><h2>Grafik Jam Tersibuk</h2>
+   <div class="lgd"><span style="--c:var(--free)"><i></i>Keramaian (% dari jam tersibuk)</span><span style="--c:var(--acc)"><i></i>Jam sekarang</span><span style="--c:var(--busy)"><i></i>Puncak</span></div></div>
+   <div class="upd"><span id="upd">Update: -</span><button class="btn ghost" onclick="loadBusy(true)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg>Muat Ulang</button></div></div>
+  <div class="chips3"><span id="busyChips" style="display:contents"></span><div class="seg" id="seg"><button data-d="7" class="on">7 hari</button><button data-d="30">30 hari</button></div></div>
+  <p id="busyTxt">Memuat...</p><div class="cv" id="cv"></div>
+  <div class="readout" id="readout" aria-live="polite">Memuat...</div></div>
  <button class="btn fab" onclick="openScan()">Scan QR meja</button>
 </main>
 
@@ -158,23 +184,29 @@ async function boot(){if(!token)return;try{me=await api('/me')}catch{return}
  $('#uName').textContent=me.user.name;$('#uRole').textContent=me.user.role==='student'?'Mahasiswa · '+(me.user.major?me.user.major+' · ':'')+me.user.nim:'Tamu · +'+me.user.phone;
  refresh();loadBusy();clearInterval(timer);timer=setInterval(()=>{tick();if(++n%5===0)refresh();if(n%300===0)loadBusy()},1000)}
 let n=0;
-let busyDays=7;
+let busyDays=7,BD=null;
 document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>{busyDays=+b.dataset.d;document.querySelectorAll('#seg button').forEach(x=>x.classList.toggle('on',x===b));loadBusy()});
-async function loadBusy(){try{renderBusy(await api('/stats/busy?days='+busyDays))}catch{}}
-function renderBusy(d){
- const H=[];for(let h=6;h<=22;h++)H.push(h);
- const c=H.map(h=>d.hours[h]),mx=Math.max(...c),pad=h=>String(h).padStart(2,'0'),t=h=>pad(h)+'.00';
+async function loadBusy(manual){try{BD=await api('/stats/busy?days='+busyDays);$('#upd').textContent='Update: '+new Date().toLocaleTimeString('id-ID',{hour12:false}).replace(/\./g,':');drawBusy();if(manual)toast('Data diperbarui')}catch{if(manual)toast('Gagal memuat data',1)}}
+addEventListener('resize',()=>BD&&drawBusy());
+function drawBusy(){const d=BD,H=[];for(let h=6;h<=22;h++)H.push(h);
+ const c=H.map(h=>d.hours[h]),mx=Math.max(...c),pad=h=>String(h).padStart(2,'0'),t=h=>pad(h)+'.00',n=H.length;
  const lv=v=>!mx||!v?'0':v/mx>=.67?'h':v/mx>=.34?'m':'l',NAME={0:'Kosong',l:'Lengang',m:'Sedang',h:'Ramai'};
  const day=H.map((h,i)=>[h,c[i]]).filter(x=>x[0]>=8&&x[0]<=20),pk=day.reduce((a,b)=>b[1]>a[1]?b:a),qt=day.reduce((a,b)=>b[1]<a[1]?b:a),nowI=H.indexOf(d.nowHour);
- $('#busyTxt').textContent=mx?`Pola keramaian ${d.days} hari terakhir, dibandingkan dengan jam tersibuk.`:'Belum cukup data untuk menampilkan pola keramaian.';
- $('#busyChips').innerHTML=mx?[nowI>=0?`<span class="chip2 lv-${lv(c[nowI])}"><i></i>Sekarang <b>${NAME[lv(c[nowI])]}</b></span>`:'',
-  `<span class="chip2 lv-h"><i></i>Paling ramai <b>${t(pk[0])}</b></span>`,`<span class="chip2 lv-l"><i></i>Paling lengang <b>${t(qt[0])}</b></span>`].join(''):'';
- $('#bars').innerHTML=H.map((h,i)=>`<button class="bar lv-${lv(c[i])} ${h===d.nowHour?'now':''}" aria-label="Pukul ${t(h)}, ${c[i]} sesi, ${NAME[lv(c[i])]}" style="--h:${mx?Math.max(c[i]/mx*100,3):3}%;--d:${i*25}ms"><span class="fill"></span></button>`).join('');
- $('#xl').innerHTML=H.map(h=>`<span class="${h===d.nowHour?'now':''}">${pad(h)}</span>`).join('');
- const bs=[...document.querySelectorAll('#bars .bar')];
- const show=i=>{bs.forEach((b,j)=>b.classList.toggle('sel',j===i));$('#readout').textContent=`Pukul ${t(H[i])} - ${c[i]} sesi aktif, ${NAME[lv(c[i])]}`};
- const home=()=>{bs.forEach(b=>b.classList.remove('sel'));$('#readout').textContent=nowI>=0?`Sekarang pukul ${t(H[nowI])} - ${c[nowI]} sesi aktif, ${NAME[lv(c[nowI])]}. Arahkan atau ketuk batang untuk melihat jam lain.`:'Arahkan atau ketuk batang untuk melihat detail tiap jam.'};
- bs.forEach((b,i)=>{b.onmouseenter=b.onfocus=b.onclick=()=>show(i)});$('#bars').onmouseleave=home;home()}
+ $('#busyTxt').textContent=mx?`Pola ${d.days} hari terakhir. Sumbu kiri menunjukkan persen dari jam tersibuk.`:'Belum cukup data untuk menampilkan pola keramaian.';
+ $('#busyChips').innerHTML=mx?[nowI>=0?`<span class="chip3 cb">${NAME[lv(c[nowI])]}<em>Sekarang</em></span>`:'',`<span class="chip3 cy">${t(pk[0])}<em>Paling ramai</em></span>`,`<span class="chip3 cg">${t(qt[0])}<em>Paling lengang</em></span>`].join(''):'';
+ const el=$('#cv'),W=Math.max(el.clientWidth,300),Ht=250,L=44,Rr=14,Tp=14,B=Ht-30,X=i=>L+i*(W-L-Rr)/(n-1),Y=v=>mx?B-v/mx*(B-Tp):B,P=c.map((v,i)=>[X(i),Y(v)]);
+ let dd=`M${P[0][0]},${P[0][1]}`;
+ for(let i=0;i<n-1;i++){const p0=P[i-1]||P[i],p1=P[i],p2=P[i+1],p3=P[i+2]||p2,lo=Math.min(p1[1],p2[1]),hi=Math.max(p1[1],p2[1]),cl=y=>Math.min(hi,Math.max(lo,y));
+  dd+=`C${p1[0]+(p2[0]-p0[0])/6},${cl(p1[1]+(p2[1]-p0[1])/6)} ${p2[0]-(p3[0]-p1[0])/6},${cl(p2[1]-(p3[1]-p1[1])/6)} ${p2[0]},${p2[1]}`}
+ const grid=[0,20,40,60,80,100].map(g=>{const y=B-g/100*(B-Tp);return `<line class="gl" x1="${L}" x2="${W-Rr}" y1="${y}" y2="${y}"/><text class="yl" x="${L-8}" y="${y+4}" text-anchor="end">${g}%</text>`}).join('');
+ const xl=H.map((h,i)=>W<520&&i%2?'':`<text class="xt" x="${X(i)}" y="${Ht-8}" text-anchor="middle">${W<700?pad(h):t(h)}</text>`).join('');
+ const pts=P.map(([x,y],i)=>(i===nowI?`<circle class="halo" cx="${x}" cy="${y}" r="13"/>`:'')+`<circle class="pt lv-${lv(c[i])} ${i===nowI?'nw':''}" cx="${x}" cy="${y}" r="${i===nowI?6.5:c[i]===mx&&mx?6:4.6}"/>`).join('');
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${Ht}" role="img" aria-label="Grafik keramaian per jam${mx?', paling ramai pukul '+t(pk[0]):''}"><defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--free);stop-opacity:.38"/><stop offset="1" style="stop-color:var(--free);stop-opacity:0"/></linearGradient></defs>${grid}<path class="ar" d="${dd}L${X(n-1)},${B}L${X(0)},${B}Z" fill="url(#ag)"/><path class="ln" d="${dd}"/><line class="sl" y1="${Tp}" y2="${B}"/>${pts}${xl}</svg>`;
+ const sv=el.querySelector('svg'),ln=sv.querySelector('.ln'),sl=sv.querySelector('.sl'),ps=[...sv.querySelectorAll('.pt')];ln.style.setProperty('--len',Math.ceil(ln.getTotalLength()));
+ const show=i=>{sl.setAttribute('x1',X(i));sl.setAttribute('x2',X(i));sl.style.opacity=1;$('#readout').textContent=`Pukul ${t(H[i])} - ${c[i]} sesi aktif (${mx?Math.round(c[i]/mx*100):0}% dari puncak), ${NAME[lv(c[i])]}`};
+ const home=()=>{sl.style.opacity=0;$('#readout').textContent=nowI>=0?`Sekarang pukul ${t(H[nowI])} - ${c[nowI]} sesi aktif, ${NAME[lv(c[nowI])]}. Arahkan atau ketuk grafik untuk melihat jam lain.`:'Arahkan atau ketuk grafik untuk melihat detail tiap jam.'};
+ const at=e=>Math.max(0,Math.min(n-1,Math.round((e.clientX-sv.getBoundingClientRect().left-L)/((W-L-Rr)/(n-1)))));
+ sv.onpointermove=sv.onpointerdown=e=>show(at(e));sv.onpointerleave=e=>{if(e.pointerType==='mouse')home()};home()}
 async function refresh(){try{[ws,me]=await Promise.all([api('/workspaces'),api('/me')]);render()}catch{}}
 function tick(){const s=me?.session;if(!s)return;const x=Math.max(0,Date.now()-new Date(s.started_at));
  $('#bTime').textContent=[x/36e5,x/6e4%60,x/1e3%60].map(v=>String(Math.floor(v)).padStart(2,'0')).join(':')}
