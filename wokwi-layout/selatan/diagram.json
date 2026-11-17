@@ -1,0 +1,862 @@
+{
+ "version": 1,
+ "author": "workspace-kampus",
+ "editor": "wokwi",
+ "parts": [
+  {
+   "type": "wokwi-esp32-devkit-v1",
+   "id": "esp",
+   "top": 418,
+   "left": 2600,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-lcd1602",
+   "id": "lcd",
+   "top": 550,
+   "left": 1248,
+   "attrs": {
+    "pins": "i2c"
+   }
+  },
+  {
+   "type": "wokwi-buzzer",
+   "id": "bz",
+   "top": 1188,
+   "left": 2600,
+   "attrs": {
+    "volume": "0.2"
+   }
+  },
+  {
+   "type": "wokwi-hc-sr04",
+   "id": "sS01",
+   "top": 0,
+   "left": 858,
+   "attrs": {
+    "distance": "200"
+   }
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "pS01",
+   "top": 105,
+   "left": 918,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-hc-sr04",
+   "id": "sS02",
+   "top": 0,
+   "left": 1820,
+   "attrs": {
+    "distance": "200"
+   }
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "pS02",
+   "top": 105,
+   "left": 1880,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-hc-sr04",
+   "id": "sS03",
+   "top": 352,
+   "left": 156,
+   "attrs": {
+    "distance": "200"
+   }
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "pS03",
+   "top": 457,
+   "left": 216,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-hc-sr04",
+   "id": "sS04",
+   "top": 748,
+   "left": 156,
+   "attrs": {
+    "distance": "200"
+   }
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "pS04",
+   "top": 853,
+   "left": 216,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-hc-sr04",
+   "id": "sS05",
+   "top": 1144,
+   "left": 156,
+   "attrs": {
+    "distance": "200"
+   }
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "pS05",
+   "top": 1249,
+   "left": 216,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-hc-sr04",
+   "id": "sS06",
+   "top": 1232,
+   "left": 858,
+   "attrs": {
+    "distance": "200"
+   }
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "pS06",
+   "top": 1337,
+   "left": 918,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-hc-sr04",
+   "id": "sS07",
+   "top": 1232,
+   "left": 1820,
+   "attrs": {
+    "distance": "200"
+   }
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "pS07",
+   "top": 1337,
+   "left": 1880,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-ili9341",
+   "id": "tS01",
+   "top": -20,
+   "left": 1058,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-ili9341",
+   "id": "tS02",
+   "top": -20,
+   "left": 2020,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-ili9341",
+   "id": "tS03",
+   "top": 332,
+   "left": 356,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-ili9341",
+   "id": "tS04",
+   "top": 728,
+   "left": 356,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-ili9341",
+   "id": "tS05",
+   "top": 1124,
+   "left": 356,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-ili9341",
+   "id": "tS06",
+   "top": 1212,
+   "left": 1058,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-ili9341",
+   "id": "tS07",
+   "top": 1212,
+   "left": 2020,
+   "attrs": {}
+  }
+ ],
+ "connections": [
+  [
+   "esp:3V3",
+   "lcd:VCC",
+   "red",
+   []
+  ],
+  [
+   "esp:GND.1",
+   "lcd:GND",
+   "black",
+   []
+  ],
+  [
+   "esp:D21",
+   "lcd:SDA",
+   "purple",
+   []
+  ],
+  [
+   "esp:D22",
+   "lcd:SCL",
+   "orange",
+   []
+  ],
+  [
+   "esp:D13",
+   "bz:2",
+   "gold",
+   []
+  ],
+  [
+   "bz:1",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "pS01:VDD",
+   "sS01:VCC",
+   "red",
+   []
+  ],
+  [
+   "pS01:VSS",
+   "sS01:GND",
+   "black",
+   []
+  ],
+  [
+   "pS02:VDD",
+   "sS02:VCC",
+   "red",
+   []
+  ],
+  [
+   "pS02:VSS",
+   "sS02:GND",
+   "black",
+   []
+  ],
+  [
+   "pS03:VDD",
+   "sS03:VCC",
+   "red",
+   []
+  ],
+  [
+   "pS03:VSS",
+   "sS03:GND",
+   "black",
+   []
+  ],
+  [
+   "pS04:VDD",
+   "sS04:VCC",
+   "red",
+   []
+  ],
+  [
+   "pS04:VSS",
+   "sS04:GND",
+   "black",
+   []
+  ],
+  [
+   "pS05:VDD",
+   "sS05:VCC",
+   "red",
+   []
+  ],
+  [
+   "pS05:VSS",
+   "sS05:GND",
+   "black",
+   []
+  ],
+  [
+   "pS06:VDD",
+   "sS06:VCC",
+   "red",
+   []
+  ],
+  [
+   "pS06:VSS",
+   "sS06:GND",
+   "black",
+   []
+  ],
+  [
+   "pS07:VDD",
+   "sS07:VCC",
+   "red",
+   []
+  ],
+  [
+   "pS07:VSS",
+   "sS07:GND",
+   "black",
+   []
+  ],
+  [
+   "esp:VIN",
+   "sS01:VCC",
+   "red",
+   []
+  ],
+  [
+   "esp:GND.1",
+   "sS01:GND",
+   "black",
+   []
+  ],
+  [
+   "esp:D4",
+   "pS01:DIN",
+   "purple",
+   []
+  ],
+  [
+   "sS01:VCC",
+   "sS03:VCC",
+   "red",
+   []
+  ],
+  [
+   "sS01:GND",
+   "sS03:GND",
+   "black",
+   []
+  ],
+  [
+   "pS01:DOUT",
+   "pS03:DIN",
+   "purple",
+   []
+  ],
+  [
+   "sS03:VCC",
+   "sS04:VCC",
+   "red",
+   []
+  ],
+  [
+   "sS03:GND",
+   "sS04:GND",
+   "black",
+   []
+  ],
+  [
+   "pS03:DOUT",
+   "pS04:DIN",
+   "purple",
+   []
+  ],
+  [
+   "sS04:VCC",
+   "sS05:VCC",
+   "red",
+   []
+  ],
+  [
+   "sS04:GND",
+   "sS05:GND",
+   "black",
+   []
+  ],
+  [
+   "pS04:DOUT",
+   "pS05:DIN",
+   "purple",
+   []
+  ],
+  [
+   "sS05:VCC",
+   "sS06:VCC",
+   "red",
+   []
+  ],
+  [
+   "sS05:GND",
+   "sS06:GND",
+   "black",
+   []
+  ],
+  [
+   "pS05:DOUT",
+   "pS06:DIN",
+   "purple",
+   []
+  ],
+  [
+   "sS06:VCC",
+   "sS07:VCC",
+   "red",
+   []
+  ],
+  [
+   "sS06:GND",
+   "sS07:GND",
+   "black",
+   []
+  ],
+  [
+   "pS06:DOUT",
+   "pS07:DIN",
+   "purple",
+   []
+  ],
+  [
+   "sS07:VCC",
+   "sS02:VCC",
+   "red",
+   []
+  ],
+  [
+   "sS07:GND",
+   "sS02:GND",
+   "black",
+   []
+  ],
+  [
+   "pS07:DOUT",
+   "pS02:DIN",
+   "purple",
+   []
+  ],
+  [
+   "esp:D5",
+   "sS01:TRIG",
+   "green",
+   []
+  ],
+  [
+   "esp:D34",
+   "sS01:ECHO",
+   "blue",
+   []
+  ],
+  [
+   "tS01:VCC",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS01:LED",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS01:RST",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS01:GND",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "tS01:SCK",
+   "esp:D18",
+   "yellow",
+   []
+  ],
+  [
+   "tS01:MOSI",
+   "esp:D23",
+   "orange",
+   []
+  ],
+  [
+   "tS01:D/C",
+   "esp:TX2",
+   "cyan",
+   []
+  ],
+  [
+   "tS01:CS",
+   "esp:D25",
+   "gold",
+   []
+  ],
+  [
+   "esp:D5",
+   "sS02:TRIG",
+   "green",
+   []
+  ],
+  [
+   "esp:D35",
+   "sS02:ECHO",
+   "blue",
+   []
+  ],
+  [
+   "tS02:VCC",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS02:LED",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS02:RST",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS02:GND",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "tS02:SCK",
+   "esp:D18",
+   "yellow",
+   []
+  ],
+  [
+   "tS02:MOSI",
+   "esp:D23",
+   "orange",
+   []
+  ],
+  [
+   "tS02:D/C",
+   "esp:TX2",
+   "cyan",
+   []
+  ],
+  [
+   "tS02:CS",
+   "esp:D26",
+   "gold",
+   []
+  ],
+  [
+   "esp:D5",
+   "sS03:TRIG",
+   "green",
+   []
+  ],
+  [
+   "esp:VP",
+   "sS03:ECHO",
+   "blue",
+   []
+  ],
+  [
+   "tS03:VCC",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS03:LED",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS03:RST",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS03:GND",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "tS03:SCK",
+   "esp:D18",
+   "yellow",
+   []
+  ],
+  [
+   "tS03:MOSI",
+   "esp:D23",
+   "orange",
+   []
+  ],
+  [
+   "tS03:D/C",
+   "esp:TX2",
+   "cyan",
+   []
+  ],
+  [
+   "tS03:CS",
+   "esp:D27",
+   "gold",
+   []
+  ],
+  [
+   "esp:D5",
+   "sS04:TRIG",
+   "green",
+   []
+  ],
+  [
+   "esp:VN",
+   "sS04:ECHO",
+   "blue",
+   []
+  ],
+  [
+   "tS04:VCC",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS04:LED",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS04:RST",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS04:GND",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "tS04:SCK",
+   "esp:D18",
+   "yellow",
+   []
+  ],
+  [
+   "tS04:MOSI",
+   "esp:D23",
+   "orange",
+   []
+  ],
+  [
+   "tS04:D/C",
+   "esp:TX2",
+   "cyan",
+   []
+  ],
+  [
+   "tS04:CS",
+   "esp:D14",
+   "gold",
+   []
+  ],
+  [
+   "esp:D5",
+   "sS05:TRIG",
+   "green",
+   []
+  ],
+  [
+   "esp:D32",
+   "sS05:ECHO",
+   "blue",
+   []
+  ],
+  [
+   "tS05:VCC",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS05:LED",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS05:RST",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS05:GND",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "tS05:SCK",
+   "esp:D18",
+   "yellow",
+   []
+  ],
+  [
+   "tS05:MOSI",
+   "esp:D23",
+   "orange",
+   []
+  ],
+  [
+   "tS05:D/C",
+   "esp:TX2",
+   "cyan",
+   []
+  ],
+  [
+   "tS05:CS",
+   "esp:D12",
+   "gold",
+   []
+  ],
+  [
+   "esp:D5",
+   "sS06:TRIG",
+   "green",
+   []
+  ],
+  [
+   "esp:D33",
+   "sS06:ECHO",
+   "blue",
+   []
+  ],
+  [
+   "tS06:VCC",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS06:LED",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS06:RST",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS06:GND",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "tS06:SCK",
+   "esp:D18",
+   "yellow",
+   []
+  ],
+  [
+   "tS06:MOSI",
+   "esp:D23",
+   "orange",
+   []
+  ],
+  [
+   "tS06:D/C",
+   "esp:TX2",
+   "cyan",
+   []
+  ],
+  [
+   "tS06:CS",
+   "esp:D15",
+   "gold",
+   []
+  ],
+  [
+   "esp:D5",
+   "sS07:TRIG",
+   "green",
+   []
+  ],
+  [
+   "esp:RX2",
+   "sS07:ECHO",
+   "blue",
+   []
+  ],
+  [
+   "tS07:VCC",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS07:LED",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS07:RST",
+   "esp:3V3",
+   "red",
+   []
+  ],
+  [
+   "tS07:GND",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "tS07:SCK",
+   "esp:D18",
+   "yellow",
+   []
+  ],
+  [
+   "tS07:MOSI",
+   "esp:D23",
+   "orange",
+   []
+  ],
+  [
+   "tS07:D/C",
+   "esp:TX2",
+   "cyan",
+   []
+  ],
+  [
+   "tS07:CS",
+   "esp:D2",
+   "gold",
+   []
+  ]
+ ],
+ "dependencies": {}
+}
