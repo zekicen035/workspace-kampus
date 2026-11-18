@@ -1,22 +1,24 @@
 # Ruang Kita – Peta Workspace Kampus
-Express + Supabase + ESP32 (Wokwi). Struktur: `server.js`, `public/index.html`, `schema.sql`, `wokwi/`.
+FastAPI (Python) + Supabase + ESP32 (Wokwi). Frontend di `public/` tidak berubah dari versi Node.
 
-## 1. Supabase
-1. Buat project, buka **SQL Editor**, jalankan isi `schema.sql` (membuat tabel + data contoh NIM 2021001–2021003 dan 10 meja).
-2. **Project Settings > API**: salin `Project URL` dan `service_role` key.
+## Jalankan lokal
+```
+python -m venv .venv
+.venv\Scripts\activate        # Windows  (Mac/Linux: source .venv/bin/activate)
+pip install -r requirements.txt
+copy .env.example .env        # lalu isi nilainya (Mac/Linux: cp)
+python test_connection.py     # cek koneksi Supabase
+python main.py                # atau: uvicorn main:app --reload --port 8000
+```
+Buka http://localhost:8000 (admin: /admin.html, dokumentasi API: /docs).
 
-## 2. Jalankan lokal
-`cp .env.example .env` (isi nilainya) → `npm install` → `npm start` → buka http://localhost:3000
+## Deploy ke Render
+Build: `pip install -r requirements.txt`
+Start: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+Isi Environment sama seperti `.env`.
 
-## 3. Deploy ke Render
-- Push ke GitHub → Render **New > Web Service** → Build: `npm install`, Start: `npm start`.
-- Environment: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `JWT_SECRET`, `DEVICE_KEY`, `FONNTE_TOKEN`.
+## Uji logika
+`python -m unittest discover -s tests -v`
 
-## 4. OTP WhatsApp
-Daftar di fonnte.com, hubungkan nomor WA, salin token ke `FONNTE_TOKEN`. Tanpa token, server berjalan mode demo (OTP tampil di layar & log).
-
-## 5. Wokwi
-Buat project ESP32 baru, salin `sketch.ino`, `diagram.json`, `libraries.txt`. Ubah `SERVER_URL` ke URL Render dan `DEVICE_KEY`. Geser nilai jarak HC-SR04: di bawah 80 cm = ada orang → web menampilkan "Ada orang"; check-in via QR → "Dipakai". Render free tier tidur saat idle, request pertama bisa lambat.
-
-## 6. Halaman admin
-Buka `/admin.html`, masuk dengan nilai env `ADMIN_KEY` (tambahkan juga di Render). Isinya: pantauan real-time + paksa check-out, riwayat 100 sesi terakhir, tambah/hapus meja, dan cetak QR semua meja (tombol Cetak → simpan sebagai PDF).
+## Wokwi
+Ubah `SERVER_URL` ke URL Render dan `DEVICE_KEY` di sketch.ino (sama dengan `DEVICE_KEY` di .env).

@@ -1,5 +1,0 @@
-LiquidCrystal I2C
-Adafruit NeoPixel
-Adafruit GFX Library
-Adafruit BusIO
-Adafruit ILI9341
