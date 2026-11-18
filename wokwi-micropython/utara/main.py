@@ -166,16 +166,25 @@ class Node:
         sleep_ms(1000)
 
 
-def connect_wifi(lcd):
-    lcd.print_at(0, 1, pad("Konek WiFi..."))
+def connect_wifi(lcd, timeout_s=30):
     sta = network.WLAN(network.STA_IF)
     sta.active(True)
-    sta.connect("Wokwi-GUEST", "")
+    percobaan = 0
     while not sta.isconnected():
-        sleep_ms(300)
-        print(".", end="")
-    print("\nWiFi OK")
-
+        percobaan += 1
+        lcd.print_at(0, 1, pad("Konek WiFi #%d" % percobaan))
+        print("Konek WiFi, percobaan", percobaan)
+        try:
+            sta.disconnect()
+        except Exception:
+            pass
+        sta.connect("Wokwi-GUEST", "")
+        t0 = ticks_ms()
+        while not sta.isconnected() and ticks_diff(ticks_ms(), t0) < timeout_s * 1000:
+            sleep_ms(300)
+            print(".", end="")
+        print("\nstatus:", sta.status())
+    print("WiFi OK", sta.ifconfig())
 
 def run(max_loops=None):
     node = Node()
